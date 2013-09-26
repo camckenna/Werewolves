@@ -6,7 +6,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import edu.wm.camckenna.werewolves.dao.IPlayerDAO;
 import edu.wm.camckenna.werewolves.dao.IUserDAO;
+import edu.wm.camckenna.werewolves.domain.GPSLocation;
 import edu.wm.camckenna.werewolves.domain.Player;
+import edu.wm.camckenna.werewolves.exceptions.MultiplePlayersWithSameIDException;
 import edu.wm.camckenna.werewolves.exceptions.NoPlayerFoundException;
 
 public class GameService {
@@ -29,8 +31,17 @@ public class GameService {
 		return;
 	}
 	
-	public Player getPlayerByID(String id) throws NoPlayerFoundException
+	public Player getPlayerByID(String id) throws NoPlayerFoundException, MultiplePlayersWithSameIDException
 	{
 		return playerDAO.getPlayerByID(id);
+	}	
+
+	public void updatePosition(String name, GPSLocation location) {
+		// TODO Auto-generated method stub
+		
+	}
+	public boolean canKill(Player killer, Player victim){
+		
+		return true;
 	}
 }

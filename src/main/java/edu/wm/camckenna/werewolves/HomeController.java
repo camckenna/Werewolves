@@ -1,5 +1,6 @@
 package edu.wm.camckenna.werewolves;
 
+import java.security.Principal;
 import java.text.DateFormat;
 import java.util.Date;
 import java.util.List;
@@ -10,10 +11,13 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import edu.wm.camckenna.werewolves.domain.GPSLocation;
+import edu.wm.camckenna.werewolves.domain.JsonResponse;
 import edu.wm.camckenna.werewolves.domain.Kill;
 import edu.wm.camckenna.werewolves.domain.Player;
 import edu.wm.camckenna.werewolves.service.GameService;
@@ -56,6 +60,18 @@ public class HomeController {
 		List<Player> players = gameService.getAllAlive();
 		return players;
 	}
+	
+	@RequestMapping(value= "/location", method=RequestMethod.GET)
+	public @ResponseBody JsonResponse setLocation(@ModelAttribute GPSLocation location, Principal principle){
+		
+		JsonResponse response = new JsonResponse();
+		logger.info("Setting for " + principle.getName() + "'s location to: " + location);
+		gameService.updatePosition(principle.getName(), location);
+		return response;
+			
+	}
+	
+	//@RequestMapping(value="/home", method=RequestMethod.GET)
 	
 
 	

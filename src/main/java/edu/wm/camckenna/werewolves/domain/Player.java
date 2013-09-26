@@ -9,9 +9,11 @@ public class Player {
 	private double lng;
 	private String userId;
 	private boolean isWerewolf;
+	private boolean canKill;
+	private String votedAgainst;
 	
-	public Player(String id, boolean isDead, float lat, float lng,
-			String userId, boolean isWerewolf) {
+	public Player(String id, boolean isDead, double lat, double lng,
+			String userId, boolean isWerewolf, boolean canKill, String votedAgainst) {
 		super();
 		this.id = id;
 		this.isDead = isDead;
@@ -19,10 +21,11 @@ public class Player {
 		this.lng = lng;
 		this.userId = userId;
 		this.isWerewolf = isWerewolf;
+		this.canKill = canKill;
+		this.votedAgainst = votedAgainst;
 	}
-
 	public Player() {
-		// TODO Auto-generated constructor stub
+		super();
 	}
 
 	public boolean isWerewolf() {
@@ -62,6 +65,19 @@ public class Player {
 	}
 	public void setUserId(String userId) {
 		this.userId = userId;
+	}
+	public boolean getCanKill() {
+		return canKill;
+	}
+	public void setCanKill(boolean canKill) {
+		this.canKill = canKill;
+	}
+
+	public String getVotedAgainst() {
+		return votedAgainst;
+	}
+	public void setVotedAgainst(String votedAgainst) {
+		this.votedAgainst = votedAgainst;
 	}
 	
 }

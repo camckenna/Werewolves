@@ -21,4 +21,7 @@ public class NoPlayerFoundException extends Exception {
 		super();
 		this.userID = userId;
 	}
+	public String toString(){
+		return "No player with ID: " + userID + " was found in this database"; 
+	}
 }

@@ -6,6 +6,8 @@ public class Game {
 
 	private int dayNightFreq;
 	private Date createdDate;
+	private boolean isRunning;
+	private long timer;
 	
 	public Game(int dayNightFreq, Date createdDate) {
 		super();
@@ -23,5 +25,17 @@ public class Game {
 	}
 	public void setCreatedDate(Date createdDate) {
 		this.createdDate = createdDate;
+	}
+	public boolean isRunning() {
+		return isRunning;
+	}
+	public void setRunning(boolean isRunning) {
+		this.isRunning = isRunning;
+	}
+	public long getTimer() {
+		return timer;
+	}
+	public void setTimer(long timer) {
+		this.timer = timer;
 	}
 }
