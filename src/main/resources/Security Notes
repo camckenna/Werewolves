@@ -1,0 +1,40 @@
+IN Spring-security.xml
+
+<http>
+	<intercept-url pattern="/players/*" access="ROLE_USER" />
+	<intercept-url pattern="/location" access="ROLE_USER" />
+	<intercept-url pattern="/admin" access="ROLE_ADMIN" />
+</http>
+
+<authentication-manager>
+	<authentication-provider user-service-ref="userService"> //new bean to root-context.xml
+	//like game Serice - loadUserByUsername
+	<password-encoder ref="encoder" />
+	</ authentication-provider>
+	</ authentication-manager>
+
+	<bean:bean id="encoder" class="org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
+	
+	//Extended UserDetails to myUser
+	//org.springframework.data package
+	
+	    <bean id="encoder" 
+    class="org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder" />
+    
+        <authentication-manager>
+        <authentication-provider>
+            <user-service>
+                <user name="user" password="user" authorities="ROLE_ADMIN" />
+                <user name="joenash" password="letmein" authorities="ROLE_USER" />
+                <user name="janenathan" password="letmein" authorities="ROLE_USER" />
+                <user name="MEGABEASTGUY" password="letmein" authorities="ROLE_USER" />
+                <user name="ThatAssassinGuy" password="letmein" authorities="ROLE_USER" />
+                <user name="ThatAssassinGirl" password="letmein" authorities="ROLE_USER" />
+                <user name="Castiel" password="letmein" authorities="ROLE_USER" />
+                <user name="creppyguy" password="letmein" authorities="ROLE_USER" />
+                <user name="watchingyou" password="letmein" authorities="ROLE_USER" />
+                <user name="Asset" password="letmein" authorities="ROLE_USER" />
+                <user name="Admin" password="letmein" authorities="ROLE_USER" />
+            </user-service>
+        </authentication-provider>
+    </authentication-manager>

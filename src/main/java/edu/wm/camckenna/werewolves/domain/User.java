@@ -1,6 +1,6 @@
 package edu.wm.camckenna.werewolves.domain;
 
-public class User {
+public class User implements Comparable{
 	
 	private String id;
 	private String firstName;
@@ -8,9 +8,14 @@ public class User {
 	private String username;
 	private String hashedPassword;
 	private String imageURL;
+	private int score;
+	private boolean isAdmin;
 	
+	public User(){
+		super();
+	}
 	public User(String id, String firstName, String lastName, String username,
-			String hashedPassword, String imageURL) {
+			String hashedPassword, String imageURL, boolean isAdmin) {
 		super();
 		this.id = id;
 		this.firstName = firstName;
@@ -18,6 +23,8 @@ public class User {
 		this.username = username;
 		this.hashedPassword = hashedPassword;
 		this.imageURL = imageURL;
+		this.score = 0;
+		this.isAdmin = isAdmin;
 	}
 	public String getId() {
 		return id;
@@ -55,4 +62,25 @@ public class User {
 	public void setImageURL(String imageURL) {
 		this.imageURL = imageURL;
 	}
+	public int getScore() {
+		return score;
+	}
+	public void setScore(int score) {
+		this.score = score;
+	}
+	public boolean isAdmin() {
+		return isAdmin;
+	}
+	public void setAdmin(boolean isAdmin) {
+		this.isAdmin = isAdmin;
+	}
+	
+public int compareTo(Object obj){
+	User user = (User)obj;
+	return (this.score - user.getScore());
+	}
+public void increaseScore(int i) {
+	this.score+=i;
+	
+}
 }

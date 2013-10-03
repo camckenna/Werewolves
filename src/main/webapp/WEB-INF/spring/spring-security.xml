@@ -1,0 +1,38 @@
+<beans:beans xmlns="http://www.springframework.org/schema/security"
+    xmlns:beans="http://www.springframework.org/schema/beans" 
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans
+    http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
+    http://www.springframework.org/schema/security
+    http://www.springframework.org/schema/security/spring-security-3.1.xsd">
+
+    <http>
+        <intercept-url pattern="/scores" access="ROLE_USER" />
+        <intercept-url pattern="/vote/*" access="ROLE_USER" />
+         <intercept-url pattern="/kill/*" access="ROLE_USER" />
+        <intercept-url pattern="/location" access="ROLE_USER" />
+        <intercept-url pattern="/nearby" access="ROLE_USER" />
+        <intercept-url pattern="/restart" access="ROLE_ADMIN" />
+        <http-basic /> 
+    </http>
+    
+       <authentication-manager>
+        <authentication-provider>
+            <user-service>
+                <user name="user" password="user" authorities="ROLE_ADMIN" />
+                <user name="joenash" password="letmein" authorities="ROLE_USER" />
+                <user name="janenathan" password="letmein" authorities="ROLE_USER" />
+                <user name="MEGABEASTGUY" password="letmein" authorities="ROLE_USER" />
+                <user name="ThatAssassinGuy" password="letmein" authorities="ROLE_USER" />
+                <user name="ThatAssassinGirl" password="letmein" authorities="ROLE_USER" />
+                <user name="Castiel" password="letmein" authorities="ROLE_USER" />
+                <user name="creppyguy" password="letmein" authorities="ROLE_USER" />
+                <user name="watchingyou" password="letmein" authorities="ROLE_USER" />
+                <user name="Asset" password="letmein" authorities="ROLE_USER" />
+                <user name="Admin" password="letmein" authorities="ROLE_USER" />
+            </user-service>
+        </authentication-provider>
+    </authentication-manager>  
+
+
+</beans:beans>

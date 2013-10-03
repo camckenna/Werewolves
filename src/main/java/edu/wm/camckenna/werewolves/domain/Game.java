@@ -13,6 +13,7 @@ public class Game {
 		super();
 		this.dayNightFreq = dayNightFreq;
 		this.createdDate = createdDate;
+		this.timer = 0;
 	}
 	public int getDayNightFreq() {
 		return dayNightFreq;

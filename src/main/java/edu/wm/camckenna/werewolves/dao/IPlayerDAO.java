@@ -15,6 +15,7 @@ public interface IPlayerDAO {
 	void createPlayer(Player player);
 	void updatePlayer(Player player);
 	void deletePlayer(Player player);
+	void discardTable();
 	
 	List<Player> getAllPlayers();
 	List<Player> getAllAlive();
@@ -27,5 +28,10 @@ public interface IPlayerDAO {
 	void setDead(Player p);	
 	void setPlayerLocation(Player p, GPSLocation loc);
 	
+	List<Player> findNearbyPlayers(Player p);
+	
 	boolean equals(Player p1, Player p2);
+	
+	Player getPlayerbyUsername(String username) throws NoPlayerFoundException, MultiplePlayersWithSameIDException;
+	
 }

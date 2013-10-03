@@ -2,12 +2,38 @@
 <beans xmlns="http://www.springframework.org/schema/beans"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:context="http://www.springframework.org/schema/context"
-	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
-		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd">
+	xmlns:mvc="http://www.springframework.org/schema/mvc"
+	xmlns:task="http://www.springframework.org/schema/task"
+	xmlns:security="http://www.springframework.org/schema/security"
+	xsi:schemaLocation="http://www.springframework.org/schema/mvc 
+	http://www.springframework.org/schema/mvc/spring-mvc-3.0.xsd
+		http://www.springframework.org/schema/task 
+	http://www.springframework.org/schema/task/spring-task-3.0.xsd
+		http://www.springframework.org/schema/beans 
+	http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/context 
+	http://www.springframework.org/schema/context/spring-context-3.0.xsd
+		http://www.springframework.org/schema/security
+	http://www.springframework.org/schema/security/spring-security-3.0.3.xsd">
 	
 	<!-- Root Context: defines shared resources visible to all other web components -->
 	<context:annotation-config />
+	<mvc:annotation-driven />	
+	<context:component-scan base-package="edu.wm.camckenna.werewolves" />
+	
+	<task:annotation-driven executor="myExecutor" scheduler="myScheduler" />
+	<task:executor id="myExecutor" pool-size="5" />
+	<task:scheduler id="myScheduler" pool-size="10" />
+	
+		
+	<bean id="mongo" class="com.mongodb.MongoClient" />
+	
 	<bean id="playerDAO" class="edu.wm.camckenna.werewolves.dao.MongoPlayerDAO"/>
-	<bean id="gameService" name="gameService" class="edu.wm.camckenna.werewolves.service.GameService"></bean>
-	<bean id="userDAO" class="edu.wm.camckenna.werewolves.dao.MongoUserDAO"></bean>
+	<bean id="gameService" class="edu.wm.camckenna.werewolves.service.GameService" />
+	<bean id="userDAO" class="edu.wm.camckenna.werewolves.dao.MongoUserDAO" />
+	<bean id="voteDAO" class="edu.wm.camckenna.werewolves.dao.MongoVoteDAO" />
+	<bean id="killDAO" class="edu.wm.camckenna.werewolves.dao.MongoKillDAO" />
+	<bean id="userCredentialsDetailsService" class="edu.wm.camckenna.werewolves.service.UserCredentialsDetailsService" />
+	
+	
 </beans>

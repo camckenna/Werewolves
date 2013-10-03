@@ -1,0 +1,10 @@
+	@RequestMapping(value = "/players/{id}", method=RequestMethod.POST)
+	public @ResponseBody JsonResponse castVote(@ModelAttribute Vote vote, @PathVariable int id, Principal principal)
+	{
+		// add responseBody to package as a JSON object
+		//Need auth to get killer
+		
+		JsonResponse response = new JsonResponse();
+		
+		return response;
+	}

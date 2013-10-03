@@ -5,31 +5,47 @@ import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+
 import com.mongodb.BasicDBObject;
 import com.mongodb.DB;
 import com.mongodb.DBCollection;
 import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
 import com.mongodb.MongoClient;
+import com.mongodb.QueryBuilder;
 
 import edu.wm.camckenna.werewolves.domain.GPSLocation;
 import edu.wm.camckenna.werewolves.domain.Player;
 import edu.wm.camckenna.werewolves.exceptions.MultiplePlayersWithSameIDException;
 import edu.wm.camckenna.werewolves.exceptions.NoPlayerFoundException;
+import edu.wm.camckenna.werewolves.service.GameService;
 
 public class MongoPlayerDAO implements IPlayerDAO {
 	
-	private MongoClient mongoClient;
+	private static final Logger logger = LoggerFactory.getLogger(MongoPlayerDAO.class);
 	private DB db;
 	
-	public final static String COLLECTION_NAME = "PLAYERS";
+	public String COLLECTION_NAME;
 	public final static String DATABASE_NAME = "WEREWOLVES";
+	
+	@Autowired private MongoClient mongo;
 	
 	//@autowired private 
 	
 	public MongoPlayerDAO() throws UnknownHostException {
-		mongoClient = new MongoClient("localhost", 27017);
-		db = mongoClient.getDB(DATABASE_NAME);
+		mongo = new MongoClient("localhost", 27017);
+		db = mongo.getDB(DATABASE_NAME);
+		COLLECTION_NAME = "PLAYERS";
+	}
+	
+	public void setCollectionName(String coll){
+		COLLECTION_NAME = coll;
+	}
+	public String getCollectionName(){
+		return COLLECTION_NAME;
 	}
 	
 	@Override
@@ -39,8 +55,8 @@ public class MongoPlayerDAO implements IPlayerDAO {
 		
 		doc.put("id", player.getId());
 		doc.put("isDead", player.isDead());
-		doc.put("lat",player.getLat());
 		doc.put("lng", player.getLng());
+		doc.put("lat",player.getLat());
 		doc.put("userId", player.getUserId());
 		doc.put("isWerewolf", player.isWerewolf()); 
 		doc.put("canKill", player.getCanKill());
@@ -56,8 +72,8 @@ public class MongoPlayerDAO implements IPlayerDAO {
 		
 		BasicDBObject doc = new BasicDBObject();
 		doc.put("isDead", player.isDead());
-		doc.put("lat",player.getLat());
 		doc.put("lng", player.getLng());
+		doc.put("lat",player.getLat());
 		doc.put("userId", player.getUserId());
 		doc.put("isWerewolf", player.isWerewolf()); 
 		doc.put("canKill", player.getCanKill());
@@ -157,6 +173,7 @@ public class MongoPlayerDAO implements IPlayerDAO {
 		 
 		BasicDBObject searchQuery = new BasicDBObject();
 		searchQuery.put("isWerewolf", true);
+		
 		DBCursor cursor = playerColl.find(searchQuery);
 		
 		while(cursor.hasNext()){
@@ -165,9 +182,6 @@ public class MongoPlayerDAO implements IPlayerDAO {
 		}
 		return players;
 	}
-
-
-	
 	@Override
 	public void setDead(Player p) {
 		DBCollection coll = getCollection();
@@ -191,8 +205,8 @@ public class MongoPlayerDAO implements IPlayerDAO {
 		query.put("id", p.getId());
 		
 		BasicDBObject newDocument = new BasicDBObject();
-		newDocument.put("lat", loc.getLat());
 		newDocument.put("lng", loc.getLng());
+		newDocument.put("lat", loc.getLat());
 	 
 		BasicDBObject updateObj = new BasicDBObject();
 		updateObj.put("$set", newDocument);
@@ -207,14 +221,7 @@ public class MongoPlayerDAO implements IPlayerDAO {
 		BasicDBObject searchQuery = new BasicDBObject();
 		searchQuery.put("id", id);
 		DBCursor cursor = playerColl.find(searchQuery);
-		
-		/*
-		 Warning: Calling toArray or length on a DBCursor will irrevocably turn it into an array. 
-		This means that, if the cursor was iterating over ten million results 
-		(which it was lazily fetching from the database), suddenly there will 
-		be a ten-million element array in memory. Before converting to an array, 
-		make sure that there are a reasonable number of results using skip() and limit().
-		*/
+
 		if(cursor.count() < 1){
 			throw new NoPlayerFoundException(id);
 		}
@@ -234,13 +241,63 @@ public class MongoPlayerDAO implements IPlayerDAO {
 		
 		p.setId((String)obj.get("id"));
 		p.setDead((boolean)obj.get("isDead"));
-		p.setLat((double)obj.get("lat"));
 		p.setLng((double)obj.get("lng"));
+		p.setLat((double)obj.get("lat"));
 		p.setUserId((String)obj.get("userId"));
 		p.setWerewolf((boolean)obj.get("isWerewolf"));
 		p.setCanKill((boolean)obj.get("canKill"));
 		p.setVotedAgainst((String)obj.get("votedAgainst"));
 				
 		return p;
+	}
+	public void discardTable(){
+		getCollection().drop();
+	}
+
+	@Override
+	public Player getPlayerbyUsername(String username) throws NoPlayerFoundException, MultiplePlayersWithSameIDException{
+		DBCollection coll = getCollection();	
+		BasicDBObject searchQuery = new BasicDBObject();
+		searchQuery.put("userId", username);
+		DBCursor cursor = coll.find(searchQuery);
+
+		if(cursor.count() < 1){
+			throw new NoPlayerFoundException(username);
+		}
+		if(cursor.count() > 1){
+			throw new MultiplePlayersWithSameIDException(username, cursor.count());
+		}
+		
+		DBObject obj = cursor.next();
+		return convertFromObject(obj);
+	}
+
+	@Override
+	public List<Player> findNearbyPlayers(Player p) {
+		DBCollection coll = getCollection();	
+		
+		BasicDBObject query = new BasicDBObject();
+		query.put("id", p.getId());
+		QueryBuilder query2 = new QueryBuilder();
+		query2.near(p.getLng(), p.getLat());
+		
+		query.putAll(query2.get());
+		List<Player> players = new ArrayList<>();
+		
+		DBCursor cursor = coll.find(query);
+		if(cursor == null){
+			return players;
+		}
+		logger.info("Cursor is not null");
+		//Currently throwing NPE on the while line with no reasonable cause
+		//Does not replicate on other methods
+		//Does not appear to be a problem with QueryBuilder
+		while(cursor.hasNext()){
+			Player p2 = convertFromObject(cursor.next());
+			players.add(p2);
+			System.out.println("username: " + p.getUserId());
+		}
+		return players;
+		
 	}
 }

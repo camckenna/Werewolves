@@ -20,26 +20,26 @@ import edu.wm.camckenna.werewolves.domain.Player;
 import edu.wm.camckenna.werewolves.exceptions.MultiplePlayersWithSameIDException;
 import edu.wm.camckenna.werewolves.exceptions.NoPlayerFoundException;
 
-public class MongoPlayerDAOTest {
+public class MongoPlayerDAOTest {	
 	
-	public MongoClient mongoClient;
 	public DB db;
-	//public MongoPlayerDAO playerDAO;
-	
+	private static final String testCollectionName = "testPLAYERS";
 	
 	@Autowired private MongoPlayerDAO playerDAO;
-
+	@Autowired private MongoClient mongo;
+	
 	@Before
 	public void setUp() throws Exception {
-		mongoClient = new MongoClient("localhost", 27017);
-		db = mongoClient.getDB(MongoPlayerDAO.DATABASE_NAME);
+		mongo = new MongoClient("localhost", 27017);
+		db = mongo.getDB(MongoPlayerDAO.DATABASE_NAME);
 		playerDAO = new MongoPlayerDAO();
+		playerDAO.setCollectionName(testCollectionName);
 	
 	}
 
 	@After
 	public void tearDown() throws Exception {
-		mongoClient.dropDatabase(MongoPlayerDAO.DATABASE_NAME);
+		db.getCollection(testCollectionName).drop();
 	}
 	
 	@Test
@@ -49,7 +49,7 @@ public class MongoPlayerDAOTest {
 			
 		playerDAO.createPlayer(p);	
 		
-		DBCollection coll = db.getCollection(MongoPlayerDAO.COLLECTION_NAME);
+		DBCollection coll = db.getCollection(testCollectionName);
 		DBObject obj = coll.findOne();
 		
 		assertNotNull(obj);
@@ -75,7 +75,7 @@ public class MongoPlayerDAOTest {
 		Player p = new Player("1", false, 0.0, 0.0, "12", false, false, "him");
 		playerDAO.createPlayer(p);
 		
-		DBCollection coll = db.getCollection(MongoPlayerDAO.COLLECTION_NAME);
+		DBCollection coll = db.getCollection(testCollectionName);
 		DBObject obj = coll.findOne();		
 		Player p2 = playerDAO.convertFromObject(obj);
 		
@@ -94,7 +94,7 @@ public class MongoPlayerDAOTest {
 		
 		playerDAO.updatePlayer(p);
 		
-		DBCollection coll = db.getCollection(MongoPlayerDAO.COLLECTION_NAME);
+		DBCollection coll = db.getCollection(testCollectionName);
 		DBObject obj = coll.findOne();
 		Player p1 = playerDAO.convertFromObject(obj);
 		
@@ -131,7 +131,7 @@ public class MongoPlayerDAOTest {
 		
 		p.setDead(true);
 		
-		DBCollection coll = db.getCollection(MongoPlayerDAO.COLLECTION_NAME);
+		DBCollection coll = db.getCollection(testCollectionName);
 		DBObject obj = coll.findOne();		
 		Player p2 = playerDAO.convertFromObject(obj);
 		
@@ -152,6 +152,7 @@ public class MongoPlayerDAOTest {
 		players.add(p2);
 			
 		List<Player> dbPlayers = playerDAO.getAllAlive();
+		
 		for(int x = 0; x < dbPlayers.size(); x++){
 			if(		!playerDAO.equals(	players.get(x), dbPlayers.get(x)	)		)
 				assertTrue(false);			
