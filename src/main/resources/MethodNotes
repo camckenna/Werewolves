@@ -8,3 +8,20 @@
 		
 		return response;
 	}
+	
+		@RequestMapping(value = "/vote", method=RequestMethod.GET)
+	public @ResponseBody String vote(@PathVariable String name, Principal principal)
+	{
+		logger.info("Not what I wanted to call");
+		return (principal.getName() + " voted for " + name);
+	}
+	/*
+	 * TODO
+	 * This needs to be POST when I finally understand how that works
+	 */
+	@RequestMapping(value = "/vote/{name}", method={RequestMethod.GET, RequestMethod.POST})
+	public @ResponseBody String voteForPlayer(@PathVariable String name, Principal principal)
+	{
+		gameService.voteForPlayer(principal.getName(), name);
+		return (principal.getName() + " voted for " + name);
+	}

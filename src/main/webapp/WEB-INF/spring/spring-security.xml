@@ -8,11 +8,15 @@
 
     <http>
         <intercept-url pattern="/scores" access="ROLE_USER" />
+        <intercept-url pattern="/players/alive" access="ROLE_USER" />
         <intercept-url pattern="/vote/*" access="ROLE_USER" />
+        <intercept-url pattern="/voteForPlayer/*" access="ROLE_USER" />
          <intercept-url pattern="/kill/*" access="ROLE_USER" />
+         <intercept-url pattern="/killPlayer" access="ROLE_USER" />
         <intercept-url pattern="/location" access="ROLE_USER" />
         <intercept-url pattern="/nearby" access="ROLE_USER" />
-        <intercept-url pattern="/restart" access="ROLE_ADMIN" />
+         <intercept-url pattern="/info" access="ROLE_USER" />
+        <intercept-url pattern="/start" access="ROLE_ADMIN" />
         <http-basic /> 
     </http>
     

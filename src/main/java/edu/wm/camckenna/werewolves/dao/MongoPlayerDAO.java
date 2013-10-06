@@ -33,8 +33,6 @@ public class MongoPlayerDAO implements IPlayerDAO {
 	
 	@Autowired private MongoClient mongo;
 	
-	//@autowired private 
-	
 	public MongoPlayerDAO() throws UnknownHostException {
 		mongo = new MongoClient("localhost", 27017);
 		db = mongo.getDB(DATABASE_NAME);
@@ -57,7 +55,7 @@ public class MongoPlayerDAO implements IPlayerDAO {
 		doc.put("isDead", player.isDead());
 		doc.put("lng", player.getLng());
 		doc.put("lat",player.getLat());
-		doc.put("userId", player.getUserId());
+		doc.put("username", player.getUsername());
 		doc.put("isWerewolf", player.isWerewolf()); 
 		doc.put("canKill", player.getCanKill());
 		doc.put("votedAgainst", player.getVotedAgainst());
@@ -74,7 +72,7 @@ public class MongoPlayerDAO implements IPlayerDAO {
 		doc.put("isDead", player.isDead());
 		doc.put("lng", player.getLng());
 		doc.put("lat",player.getLat());
-		doc.put("userId", player.getUserId());
+		doc.put("username", player.getUsername());
 		doc.put("isWerewolf", player.isWerewolf()); 
 		doc.put("canKill", player.getCanKill());
 		doc.put("votedAgainst", player.getVotedAgainst());
@@ -100,7 +98,7 @@ public class MongoPlayerDAO implements IPlayerDAO {
 				&& p1.isDead() == p2.isDead() 
 				&& BigDecimal.valueOf(p1.getLat()).equals(BigDecimal.valueOf(p2.getLat()))
 				&& BigDecimal.valueOf(p1.getLng()).equals(BigDecimal.valueOf(p2.getLng()))
-				&& p1.getUserId().equals(p2.getUserId()) 
+				&& p1.getUsername().equals(p2.getUsername()) 
 				&& p1.isWerewolf() == p2.isWerewolf()
 				&& p1.getCanKill() == p2.getCanKill()
 				&& p1.getVotedAgainst().equals(p2.getVotedAgainst());			
@@ -182,38 +180,25 @@ public class MongoPlayerDAO implements IPlayerDAO {
 		}
 		return players;
 	}
+
 	@Override
-	public void setDead(Player p) {
-		DBCollection coll = getCollection();
+	public List<Player> getAllAliveWerewolves() {
+		List<Player> players = new ArrayList<>();
+		DBCollection playerColl = getCollection();	
+		 
+		BasicDBObject searchQuery = new BasicDBObject();
+		searchQuery.put("isWerewolf", true);
+		searchQuery.put("isDead", false);
 		
-		BasicDBObject query = new BasicDBObject();
-		query.put("id", p.getId());
+		DBCursor cursor = playerColl.find(searchQuery);
 		
-		BasicDBObject newDocument = new BasicDBObject();
-		newDocument.put("isDead", true);
-	 
-		BasicDBObject updateObj = new BasicDBObject();
-		updateObj.put("$set", newDocument);
-	 
-		coll.update(query, updateObj);			
+		while(cursor.hasNext()){
+			Player p = convertFromObject(cursor.next());
+			players.add(p);
+		}
+		return players;
 	}
-	@Override
-	public void setPlayerLocation(Player p, GPSLocation loc){
-		DBCollection coll = getCollection();
-		
-		BasicDBObject query = new BasicDBObject();
-		query.put("id", p.getId());
-		
-		BasicDBObject newDocument = new BasicDBObject();
-		newDocument.put("lng", loc.getLng());
-		newDocument.put("lat", loc.getLat());
-	 
-		BasicDBObject updateObj = new BasicDBObject();
-		updateObj.put("$set", newDocument);
-	 
-		coll.update(query, updateObj);	
-	}
-	
+
 	@Override
 	public Player getPlayerByID(String id) throws NoPlayerFoundException, MultiplePlayersWithSameIDException {
 		DBCollection playerColl = getCollection();	
@@ -243,7 +228,7 @@ public class MongoPlayerDAO implements IPlayerDAO {
 		p.setDead((boolean)obj.get("isDead"));
 		p.setLng((double)obj.get("lng"));
 		p.setLat((double)obj.get("lat"));
-		p.setUserId((String)obj.get("userId"));
+		p.setUsername((String)obj.get("username"));
 		p.setWerewolf((boolean)obj.get("isWerewolf"));
 		p.setCanKill((boolean)obj.get("canKill"));
 		p.setVotedAgainst((String)obj.get("votedAgainst"));
@@ -258,7 +243,7 @@ public class MongoPlayerDAO implements IPlayerDAO {
 	public Player getPlayerbyUsername(String username) throws NoPlayerFoundException, MultiplePlayersWithSameIDException{
 		DBCollection coll = getCollection();	
 		BasicDBObject searchQuery = new BasicDBObject();
-		searchQuery.put("userId", username);
+		searchQuery.put("username", username);
 		DBCursor cursor = coll.find(searchQuery);
 
 		if(cursor.count() < 1){
@@ -270,34 +255,5 @@ public class MongoPlayerDAO implements IPlayerDAO {
 		
 		DBObject obj = cursor.next();
 		return convertFromObject(obj);
-	}
-
-	@Override
-	public List<Player> findNearbyPlayers(Player p) {
-		DBCollection coll = getCollection();	
-		
-		BasicDBObject query = new BasicDBObject();
-		query.put("id", p.getId());
-		QueryBuilder query2 = new QueryBuilder();
-		query2.near(p.getLng(), p.getLat());
-		
-		query.putAll(query2.get());
-		List<Player> players = new ArrayList<>();
-		
-		DBCursor cursor = coll.find(query);
-		if(cursor == null){
-			return players;
-		}
-		logger.info("Cursor is not null");
-		//Currently throwing NPE on the while line with no reasonable cause
-		//Does not replicate on other methods
-		//Does not appear to be a problem with QueryBuilder
-		while(cursor.hasNext()){
-			Player p2 = convertFromObject(cursor.next());
-			players.add(p2);
-			System.out.println("username: " + p.getUserId());
-		}
-		return players;
-		
 	}
 }

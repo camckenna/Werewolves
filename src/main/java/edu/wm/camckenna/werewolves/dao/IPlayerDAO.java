@@ -22,16 +22,11 @@ public interface IPlayerDAO {
 	List<Player> getAllDead();	
 	List<Player> getAllTownspeople();
 	List<Player> getAllWerewolves();
-	
-	Player getPlayerByID(String id) throws NoPlayerFoundException, MultiplePlayersWithSameIDException;
-	
-	void setDead(Player p);	
-	void setPlayerLocation(Player p, GPSLocation loc);
-	
-	List<Player> findNearbyPlayers(Player p);
+	List<Player> getAllAliveWerewolves();
 	
 	boolean equals(Player p1, Player p2);
 	
+	Player getPlayerByID(String id) throws NoPlayerFoundException, MultiplePlayersWithSameIDException;
 	Player getPlayerbyUsername(String username) throws NoPlayerFoundException, MultiplePlayersWithSameIDException;
 	
 }

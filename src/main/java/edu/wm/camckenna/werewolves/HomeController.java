@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
@@ -56,13 +57,22 @@ public class HomeController {
 		
 		return "home";
 	}
-	
-	@RequestMapping(value = "/players/alive", method=RequestMethod.GET)
-	public @ResponseBody List<Player> getAllAlive()
+	/*
+	 * For testing purposes
+	 */
+	@RequestMapping(value = "/players", method=RequestMethod.GET)
+	public @ResponseBody List<Player> getAllPlayers()
 	{
 		// add responseBody to package as a JSON object
-		List<Player> players = gameService.getAllAlive();
+		List<Player> players = gameService.getAllPlayers();
 		return players;
+	}
+	
+	@RequestMapping(value = "/players/alive", method=RequestMethod.GET)
+	public @ResponseBody List<String> getAllAlive()
+	{
+		// add responseBody to package as a JSON object
+		return gameService.getAllAliveAsStrings();
 	}
 	/**
 	 * TODO: get Nearby
@@ -70,7 +80,6 @@ public class HomeController {
 	@RequestMapping(value = "/nearby", method=RequestMethod.GET)
 	public @ResponseBody List<Player> getAllNearby(Principal principal)
 	{
-		// add responseBody to package as a JSON object
 		List<Player> players = gameService.getAllNearby(principal.getName());
 		return players;
 	}
@@ -85,59 +94,44 @@ public class HomeController {
 	 * TODO
 	 * This needs to be POST when I finally understand how that works
 	 */
-	@RequestMapping(value = "/start", method= {RequestMethod.GET,  RequestMethod.POST})
-	public @ResponseBody String startGame()
+	@RequestMapping(value = "/start", method= RequestMethod.GET)
+	public String startGame()
 	{
-		gameService.startGame();
-		//Some code to redirect to page you came from
-		return "Starting game...";
-		
+		return "restart";		
 	}
-	/*
-	 * TODO
-	 * This needs to be POST when I finally understand how that works
-	 */
+	@RequestMapping(value = "/restart", method= RequestMethod.POST)
+	public @ResponseBody String restartGame(@RequestParam("frequency") String freq, 
+			@RequestParam("killRange") String kill, @RequestParam("scentRange") String scent)
+	{
+		gameService.startGame(freq, scent, kill);
+		return "Restarted game";		
+	}
+
 	@RequestMapping(value = "/vote", method=RequestMethod.GET)
-	public @ResponseBody String vote(@PathVariable String name, Principal principal)
+	public String voteResult(Principal principal)
 	{
-		logger.info("Not what I wanted to call");
-		return (principal.getName() + " voted for " + name);
+		return "vote"; //Goes to vote.jsp, the form page
 	}
-	/*
-	 * TODO
-	 * This needs to be POST when I finally understand how that works
-	 */
-	@RequestMapping(value = "/vote/{name}", method={RequestMethod.GET, RequestMethod.POST})
-	public @ResponseBody String voteForPlayer(@PathVariable String name, Principal principal)
+	@RequestMapping(value = "/voteForPlayer", method=RequestMethod.POST)
+	public @ResponseBody String voteSubmit(@RequestParam("username") String name, Principal principal)
 	{
 		gameService.voteForPlayer(principal.getName(), name);
 		return (principal.getName() + " voted for " + name);
 	}
-	/*
-	 * TODO
-	 * This needs to be POST when I finally understand how that works
-	 * Does not need to be called
-	 */
-	@RequestMapping(value = "/kill", method={RequestMethod.GET, RequestMethod.POST})
-	public @ResponseBody String kill(Player victim, Principal principal)
+
+	@RequestMapping(value = "/kill", method= RequestMethod.GET)
+	public String killResult(Principal principal)
 	{
-		return (principal.getName() + " attempted to kill " + victim);
+		return "kill"; //go to kill.jsp
 	}
-	/*
-	 * TODO
-	 * This needs to be POST when I finally understand how that works
-	 */
-	@RequestMapping(value = "/kill/{name}",  method={RequestMethod.GET, RequestMethod.POST})
-	public @ResponseBody String killPlayer(@PathVariable String name, Principal principal)
+	@RequestMapping(value = "/killPlayer",  method=RequestMethod.POST)
+	public @ResponseBody String killPlayer(@RequestParam("username") String name, Principal principal)
 	{
 
 		gameService.kill(principal.getName(), name);
 		return (principal.getName() + " attempted to kill " + name);
 	}
-	/*
-	 * TODO
-	 * This needs to be POST when I finally understand how that works
-	 */
+ 
 	@RequestMapping(value= "/location", method=RequestMethod.GET)
 	public @ResponseBody JsonResponse setLocation(@ModelAttribute GPSLocation location, Principal principle){
 		
@@ -147,25 +141,22 @@ public class HomeController {
 		return response;			
 	}
 
-	/*Heart beat of game...
-	 * Check to switch over 
-	 */
+
 	@RequestMapping(value= "/home", method=RequestMethod.GET)
 	public @ResponseBody String checkGameOperation(){		
-		
-		//logger.info("Check Game Operation");
+
 		gameService.checkGameOperation();
-		return "Checking operation...";
-			
+		return "Checking operation...";			
 	}
-	/*
-	 * This one is done,
-	 */
+ 
 	@RequestMapping(value= "/scores", method=RequestMethod.GET)
 	public @ResponseBody List<String> getScores(Principal principal){				
 		List<String> scores = gameService.getScores();
-		logger.info("THIS USER WAS: " + principal.getName());
-		return scores;
-			
+		return scores;			
 	}	
+	@RequestMapping(value= "/info", method=RequestMethod.GET)
+	public @ResponseBody Player getStatus(Principal principal){				
+		return gameService.getPlayerInfo(principal.getName());
+	}
+	
 }

@@ -30,6 +30,8 @@ import edu.wm.camckenna.werewolves.exceptions.MultiplePlayersWithSameIDException
 import edu.wm.camckenna.werewolves.exceptions.MultipleUsersWithSameIDException;
 import edu.wm.camckenna.werewolves.exceptions.NoPlayerFoundException;
 import edu.wm.camckenna.werewolves.exceptions.NoUserFoundException;
+import edu.wm.camckenna.werewolves.utils.GameServiceUtil;
+import edu.wm.camckenna.werewolves.utils.Values;
 
 public class GameService {
 	
@@ -45,8 +47,7 @@ public class GameService {
 	
 	public GameService(){
 		
-	}
-	
+	}	
 	public List<Player> getAllAlive()
 	{
 		return playerDAO.getAllAlive();
@@ -55,15 +56,46 @@ public class GameService {
 	{
 		return playerDAO.getAllWerewolves();
 	}
-
+	public List<Player> getAllAliveWerewolves()
+	{
+		return playerDAO.getAllAliveWerewolves();
+	}
+	public List<Player> getAllPlayers() {
+		return playerDAO.getAllPlayers();
+	}
+	public void createPlayer(Player player)
+	{
+		playerDAO.createPlayer(player);
+	}	
+	public void updatePlayer(Player p)
+	{
+		playerDAO.updatePlayer(p);
+	}	
+	public Player getPlayerByUsername(String name){
+		try {
+			return playerDAO.getPlayerbyUsername(name);
+		} catch (NoPlayerFoundException | MultiplePlayersWithSameIDException e) {
+			logger.error("Problem with username: " + name);
+			return null;
+		}
+	}
+	private List<User> getAllUsers() {
+		return userDAO.getAllUsers();
+	}
 
 	public void switchFromDayToNight(){
 		hangPlayer();
 		List<Player> werewolves = getAllWerewolves();
 		for(Player w : werewolves){
 			w.setCanKill(true);
+			logger.info("Can kill: " + w.getUsername());
 			updatePlayer(w);
-		}		
+		}
+		List<Player> allPlayers = getAllPlayers();
+		for(Player p : allPlayers){
+			p.setVotedAgainst(null);
+			updatePlayer(p);
+		}
 	}
 	public void switchFromNightToDay(){
 		List<Player> werewolves = getAllWerewolves();
@@ -74,15 +106,15 @@ public class GameService {
 		List<Player> allPlayers = getAllPlayers();
 		for(Player p : allPlayers){
 			p.setVotedAgainst("");
+			updatePlayer(p);
 		}
 		
 		List<Player> allAlive = getAllAlive();
-		updateScoreBecauseOfPlayersAction(allAlive, 1);
-
+		for(Player p : allAlive){
+			updateScoreBecauseOfPlayersAction(p, 1);
+			updatePlayer(p);
+		}
 		
-	}
-	private List<Player> getAllPlayers() {
-		return playerDAO.getAllPlayers();
 	}
 
 	@Scheduled(fixedDelay=5000)
@@ -108,17 +140,29 @@ public class GameService {
 			else{
 				switchFromNightToDay();
 				logger.info("Switching to Day");
-			}
-				
-		}
-		
-		
+			}				
+		}		
 		logger.info("Time since game began in seconds: " + timeElapsed);
 	}
-	public void startGame(){
-		//Drop PLayer,Vote,Kill collections
-		//Create new Player for each user and assign status
-		//Start game
+	public void startGame(String freq, String kill, String scent){
+		int dayNightFreq;
+		double killRange;
+		double scentRange;
+		
+		if(GameServiceUtil.isValidFreq(freq))
+			dayNightFreq = Integer.parseInt(freq);
+		else
+			dayNightFreq = Integer.parseInt(Values.TEST_DAYNIGHTFREQ);
+		
+		if(GameServiceUtil.isValidRange(scent, kill)){
+			scentRange = Double.parseDouble(scent);
+			killRange = Double.parseDouble(kill);
+		}
+		else{
+			scentRange = Double.parseDouble(Values.DEFAULT_SCENTRANGE);
+			killRange = Double.parseDouble(Values.DEFAULT_KILLRANGE);
+		}
+		
 		logger.info("Starting game!");
 		playerDAO.discardTable();
 		killDAO.discardTable();
@@ -126,61 +170,42 @@ public class GameService {
 	
 		List<User> users = getAllUsers();
 		List<Player> players = new ArrayList<Player>();
-		
+
 		for(User u: users){
 			Player p = new Player();
 			p.setId(UUID.randomUUID().toString());
 			p.setCanKill(false);
 			p.setLat(0.0);
 			p.setLng(0.0);
-			p.setUserId(u.getUsername());
+			p.setUsername(u.getUsername());
 			p.setDead(false);
+			p.setWerewolf(false);
 			p.setVotedAgainst("");
-			
+
+			createPlayer(p);
 			players.add(p);			
 		}
+		
 		long seed = System.nanoTime();
 		Collections.shuffle(players, new Random(seed));
 		
-		int numOfWolves = (int)(0.3 * players.size());
+		int numOfWolves = (int)(Values.DEFAULT_WEREWOLF_PERCENTAGE * players.size());
 		for(int x = 0; x < numOfWolves; x++){
 			players.get(x).setWerewolf(true);
-			createPlayer(players.get(x));
-		}
-		for(int x = numOfWolves; x < players.size(); x++){
-			players.get(x).setWerewolf(false);
-			createPlayer(players.get(x));
+			updatePlayer(players.get(x));
 		}
 		
-		//DayNightFreq in minutes
-		game = new Game(1, new Date());
+		//TODO: Allow setting of start time
+		game = new Game(dayNightFreq, new Date());
 		game.setRunning(true);
-		
-		
-	}
-	public void createPlayer(Player player)
-	{
-		playerDAO.createPlayer(player);
-		return;
-	}
-	
-	public void updatePlayer(Player p)
-	{
-		playerDAO.updatePlayer(p);
-		return;
-	}
-	
-	public Player getPlayerByID(String id) throws NoPlayerFoundException, MultiplePlayersWithSameIDException
-	{
-		return playerDAO.getPlayerByID(id);
-	}	
+		game.setScentRadius(scentRange);
+		game.setKillRadius(killRange);		
 
-	
-	public boolean canKill(Player killer, Player victim){	
-		return killer.getCanKill() && !killer.isDead() && !victim.isDead() && !victim.isWerewolf();
-				
-				
 	}
+	public void startGame(){
+		startGame(Values.TEST_DAYNIGHTFREQ, Values.DEFAULT_SCENTRANGE, Values.DEFAULT_KILLRANGE);
+	}
+
 	public List<String> getScores(){	
 		List<User> allUsers = userDAO.getUsersInOrderofScore();
 		List<String> namesAndScore = new ArrayList<String>();
@@ -190,20 +215,21 @@ public class GameService {
 		return namesAndScore;
 	}
 	public void voteForPlayer(String voterString, String votedAgainstString){
-		logger.info(voterString + " voted for " + votedAgainstString);
+		//logger.info(voterString + " voted for " + votedAgainstString);
+		//Need validation before here
 		Player voter = convertFromPrincipalNameToPlayer(voterString);
 		Player votedAgainst = convertFromPrincipalNameToPlayer(votedAgainstString);
 		
-		if(voter.isDead() || votedAgainst.isDead()){
-			logger.info("Cannot vote if either is dead");
+		if(!GameServiceUtil.canVote(voter, votedAgainst)){
+			logger.info("Cannot vote at this time");
 			return;
 		}
 		
-		voter.setVotedAgainst(votedAgainst.getUserId());
+		voter.setVotedAgainst(votedAgainst.getUsername());
 		Vote vote = new Vote(voterString, votedAgainstString, new Date());
 		voteDAO.addVote(vote);
 
-		playerDAO.updatePlayer(voter);
+		updatePlayer(voter);
 	}
 	public void hangPlayer() {
 		Player p = findPlayerToHang();
@@ -216,8 +242,7 @@ public class GameService {
 	private void killVotedAgainstPlayer(Player p){
 
 		p.setDead(true);
-		updatePlayer(p);		
-		logger.info(p.getUserId() + ", isDead:" + p.isDead());
+		updatePlayer(p);
 	}
 	
 	private Player findPlayerToHang(){
@@ -226,7 +251,7 @@ public class GameService {
 		for(Player p : players){
 			if(!p.isDead() && p.getVotedAgainst() != null && !p.getVotedAgainst().equals("")){
 				String votedAgainst = p.getVotedAgainst();
-				logger.info("Putting " + votedAgainst + " into the map");
+				
 				if(map.containsKey(votedAgainst)){
 					int num = map.get(votedAgainst).intValue();
 					num++;
@@ -248,7 +273,6 @@ public class GameService {
 		List<String> ids = new ArrayList<String>();
 		for(String s : map.keySet()){
 			if(Integer.valueOf(map.get(s)) == maxVotes){
-				logger.info("Updating maxvotes with: " + s);
 				ids.add(s);
 			}
 		}
@@ -257,7 +281,7 @@ public class GameService {
 			if(ids.size() == 1){
 				String playerName = ids.get(0);
 				logger.info("The player to die is: "+ playerName);
-				return playerDAO.getPlayerbyUsername(playerName);
+				return getPlayerByUsername(playerName);
 			}
 			else if(ids.size() == 0){
 				logger.info("Nobody was voted for, so nobody dies");
@@ -266,7 +290,7 @@ public class GameService {
 			else{
 				int choice = new Random().nextInt(ids.size());
 				String playerName = ids.get(choice);
-				return playerDAO.getPlayerbyUsername(playerName);
+				return getPlayerByUsername(playerName);
 			}
 		}
 		catch(Exception e){
@@ -282,27 +306,25 @@ public class GameService {
 	
 		List<Player> players = getAllAlive();
 		
-		List<Player> playersToReward = new ArrayList<Player>();
-		
 		//If the player helped vote for the werewolf
 		for(Player player : players){
-			if(player.getVotedAgainst().equals(p.getUserId())){
-				playersToReward.add(player); //players who voted to kill the werewolf
+			if(player.getVotedAgainst().equals(p.getUsername())){
+				updateScoreBecauseOfPlayersAction(player, Values.VOTING_POINTS);
+				logger.info("Rewarding " + player.getUsername() + " " + 
+						Values.VOTING_POINTS +" points");
 			}
-		}
-		updateScoreBecauseOfPlayersAction(playersToReward, 10);
+		}		
 	}
 
-	private List<User> getAllUsers() {
-		return userDAO.getAllUsers();
-	}
+
 	
-	private void updateScoreBecauseOfPlayersAction(List<Player> players, int points){
+	private void updateScoreBecauseOfPlayersAction(Player player, int points){
 		List<User> users = getAllUsers();
 		for(User u : users){
 			//if an user is in the list of players to reward, increase score by points
-			if(players.contains(u.getUsername())){
+			if(player.getUsername().equals(u.getUsername())){
 				u.increaseScore(points);
+				userDAO.updateUser(u);
 			}
 		}
 	}
@@ -323,46 +345,83 @@ public class GameService {
 		}
 	}
 	private Player convertFromPrincipalNameToPlayer(String name){
-		try{
-			return playerDAO.getPlayerbyUsername(name);
-		}
-		catch(MultiplePlayersWithSameIDException e){
-			logger.error("Too many players found for username: " + name);
-			return null;
-		} catch (NoPlayerFoundException e) {
-			logger.error("No players found for username: " + name);
-			return null;
-		}
+		
+		return getPlayerByUsername(name);
 	}
-	
-	public void kill(String victimName, String killerName){
+	public Player getPlayerInfo(String name){
+		return convertFromPrincipalNameToPlayer(name);
+	}
+	public void kill(String killerName, String victimName){
 		
 		//Check for distance
-		try {
-			Player victim = playerDAO.getPlayerbyUsername(victimName);
-			Player killer = playerDAO.getPlayerbyUsername(killerName);
+	
+			Player victim = getPlayerByUsername(victimName);
+			Player killer = getPlayerByUsername(killerName);
 			
-			if(!canKill(killer, victim)){
+		/*	logger.info("Can kill: " + killer.getCanKill() + 
+					", killer is Alive: " + !killer.isDead() +
+					", victim is Alive: " + !victim.isDead()+
+					", isInRange: " + GameServiceUtil.isInRange(killer, victim, game.getKillRadius()));
+			*/
+			
+			if(!GameServiceUtil.canKill(killer, victim, game.getKillRadius())){
 				logger.info("Cannot kill at this time");
 				return;
+			}				
+			double chanceToCounterAttack = 0.5 * ((double)getAllAliveWerewolves().size()/getAllPlayers().size());
+			if(chanceToCounterAttack > Math.random()){
+				logger.info("YOWZAH! Counterattack!" + victim.getUsername() + " countered and killed " + killer.getUsername());
+				killer.setDead(true);
+				updateScoreBecauseOfPlayersAction(victim, Values.COUNTERATTACK_POINTS);
 			}
+			else{
 				
+				logger.info(killer.getUsername() + " killed " + victim.getUsername());
 			
-			killer.setCanKill(false);
-			victim.setDead(true);
+				killer.setCanKill(false);
+				victim.setDead(true);
+				updateScoreBecauseOfPlayersAction(killer, Values.KILL_POINTS);
+			}
 			
-			playerDAO.updatePlayer(killer);
-			playerDAO.updatePlayer(victim);
+			updatePlayer(killer);
+			updatePlayer(victim);		
 			
-		} catch (NoPlayerFoundException e){
-			logger.error("No users found for usernames: " + victimName + ", or" + killerName);
-		}
-		catch(MultiplePlayersWithSameIDException e) {
-			logger.error("No users found for usernames: " + victimName + ", or" + killerName);
-		}
+
 	}
 	public List<Player> getAllNearby(String name){
-		Player p = convertFromPrincipalNameToPlayer(name);
-		return playerDAO.findNearbyPlayers(p);
+		
+				Player killer;
+		try {
+			killer = playerDAO.getPlayerbyUsername(name);
+			List<Player> allAlive = getAllAlive();
+			List<Player> nearbyPlayers = new ArrayList<Player>();
+			
+			for(Player p : allAlive){
+				if(!p.getUsername().equals(killer.getUsername())){ //different people
+					if(GameServiceUtil.isInRange(killer, p, game.getScentRadius())){
+						nearbyPlayers.add(p);
+					}
+				}
+			}
+			
+			return nearbyPlayers;
+		} catch (NoPlayerFoundException | MultiplePlayersWithSameIDException e) {
+			logger.info("Problem with Player with username: " + name);
+			return null;
+		}
+
 	}
+
+	public List<String> getAllAliveAsStrings() {
+		List<Player> players = getAllAlive();
+		List<String> playerNames = new ArrayList<String>();
+		
+		for(Player p : players){
+			playerNames.add(p.getUsername());
+		}
+		return playerNames;
+		
+	}	
+
+
 }

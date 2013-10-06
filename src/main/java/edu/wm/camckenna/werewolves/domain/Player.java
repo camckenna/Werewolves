@@ -7,19 +7,19 @@ public class Player {
 	private boolean isDead;
 	private double lat;
 	private double lng;
-	private String userId;
+	private String username;
 	private boolean isWerewolf;
 	private boolean canKill;
 	private String votedAgainst;
 	
 	public Player(String id, boolean isDead, double lat, double lng,
-			String userId, boolean isWerewolf, boolean canKill, String votedAgainst) {
+			String username, boolean isWerewolf, boolean canKill, String votedAgainst) {
 		super();
 		this.id = id;
 		this.isDead = isDead;
 		this.lat = lat;
 		this.lng = lng;
-		this.userId = userId;
+		this.username = username;
 		this.isWerewolf = isWerewolf;
 		this.canKill = canKill;
 		this.votedAgainst = votedAgainst;
@@ -60,11 +60,11 @@ public class Player {
 	public void setLng(double lng) {
 		this.lng = lng;
 	}
-	public String getUserId() {
-		return userId;
+	public String getUsername() {
+		return username;
 	}
-	public void setUserId(String userId) {
-		this.userId = userId;
+	public void setUsername(String username) {
+		this.username = username;
 	}
 	public boolean getCanKill() {
 		return canKill;

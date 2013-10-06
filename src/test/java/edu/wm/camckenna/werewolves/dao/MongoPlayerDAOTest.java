@@ -57,7 +57,7 @@ public class MongoPlayerDAOTest {
 		assertEquals(p.isDead(), (boolean)(obj.get("isDead")));
 		assertEquals(p.getLat(), (double)(obj.get("lat")), 0.00001);
 		assertEquals(p.getLng(), (double)(obj.get("lng")), 0.00001);
-		assertEquals(p.getUserId(), (String)(obj.get("userId")));
+		assertEquals(p.getUsername(), (String)(obj.get("username")));
 		assertEquals(p.isWerewolf(), (boolean)(obj.get("isWerewolf")));
 		assertEquals(p.getCanKill(), (boolean)(obj.get("canKill")));
 		assertEquals(p.getVotedAgainst(), (String)(obj.get("votedAgainst")));		
