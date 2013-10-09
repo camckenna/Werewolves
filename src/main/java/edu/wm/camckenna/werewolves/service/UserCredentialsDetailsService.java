@@ -48,7 +48,6 @@ public class UserCredentialsDetailsService implements UserDetailsService {
 		}
 		else if(user.isAdmin()){
 			roles.add(new SimpleGrantedAuthority("ROLE_ADMIN"));
-			roles.add(new SimpleGrantedAuthority("ROLE_USER"));
 		}
 		else{}
 		return roles;

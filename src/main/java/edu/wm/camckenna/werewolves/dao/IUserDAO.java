@@ -6,7 +6,9 @@ import edu.wm.camckenna.werewolves.exceptions.NoUserFoundException;
 
 import java.util.List;
 
-public interface IUserDAO {
+import org.springframework.security.core.userdetails.UserDetailsService;
+
+public interface IUserDAO extends UserDetailsService{
 	
 	void createUser(User user);
 	void updateUser(User user);

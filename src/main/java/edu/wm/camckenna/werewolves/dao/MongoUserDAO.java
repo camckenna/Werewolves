@@ -2,10 +2,18 @@ package edu.wm.camckenna.werewolves.dao;
 
 import java.net.UnknownHostException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
 import com.mongodb.BasicDBObject;
 import com.mongodb.DB;
@@ -16,12 +24,13 @@ import com.mongodb.MongoClient;
 
 import edu.wm.camckenna.werewolves.domain.Player;
 import edu.wm.camckenna.werewolves.domain.User;
+import edu.wm.camckenna.werewolves.domain.UserCredentials;
 import edu.wm.camckenna.werewolves.exceptions.MultiplePlayersWithSameIDException;
 import edu.wm.camckenna.werewolves.exceptions.MultipleUsersWithSameIDException;
 import edu.wm.camckenna.werewolves.exceptions.NoPlayerFoundException;
 import edu.wm.camckenna.werewolves.exceptions.NoUserFoundException;
 
-public class MongoUserDAO implements IUserDAO {
+public class MongoUserDAO implements IUserDAO, UserDetailsService {
 
 	
 	private DB db;
@@ -188,12 +197,46 @@ public class MongoUserDAO implements IUserDAO {
 		user.setFirstName((String)obj.get("firstName"));
 		user.setLastName((String)obj.get("lastName"));
 		user.setUsername((String)obj.get("username"));
-		user.setHashedPassword((String)obj.get("HashedPassword"));
+		user.setHashedPassword((String)obj.get("hashedPassword"));
 		user.setImageURL((String)obj.get("imageURL"));
 		user.setScore((int)obj.get("score"));
 		user.setAdmin((boolean)obj.get("isAdmin"));
 				
 		return user;
 	}
+	@Override
+	public UserDetails loadUserByUsername(String username)
+			throws UsernameNotFoundException {
+	    User user = null;
+		try {
+			user = getUserByUsername(username);
+		} catch (NoUserFoundException | MultipleUsersWithSameIDException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} 
+	    if (user == null) { 
+	      throw new UsernameNotFoundException("Invalid username/password."); 
+	    } 
+	    Collection<? extends GrantedAuthority> authorities = 
+	      createAuthorities(user); 
+	    System.out.println("I am loading a user now: " + username);
+	    System.out.println("Auth:" + authorities.toString());
+	    System.out.println("Password:" + user.getHashedPassword());
+	    
+	    return new UserCredentials(user.getUsername(), user.getHashedPassword(), 
+	      authorities); 
+	}
 
+	private Collection<? extends GrantedAuthority> createAuthorities(User user){
+		Set<SimpleGrantedAuthority> roles = new HashSet<SimpleGrantedAuthority>();
+		if(!user.isAdmin()){
+		roles.add(new SimpleGrantedAuthority("ROLE_USER"));
+		}
+		else if(user.isAdmin()){
+			roles.add(new SimpleGrantedAuthority("ROLE_ADMIN"));
+			roles.add(new SimpleGrantedAuthority("ROLE_USER"));
+		}
+		else{}
+		return roles;
+	}
 }

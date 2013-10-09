@@ -155,9 +155,9 @@ public class CreateTestUsers {
 	
 	public static String hashedPassword(String password){
 
-		//BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
-		//return passwordEncoder.encode(password);
+		BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+		return passwordEncoder.encode(password);
 		 
-		return password;
+		//return password;
 	}
 }

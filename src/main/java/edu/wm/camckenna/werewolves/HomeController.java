@@ -11,6 +11,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -107,6 +108,12 @@ public class HomeController {
 		return "Restarted game";		
 	}
 
+	@RequestMapping(value = "/logout", method=RequestMethod.GET)
+	public String logout(Principal principal)
+	{
+		SecurityContextHolder.clearContext();
+		return "logout"; //Goes to logout.jsp, 
+	}
 	@RequestMapping(value = "/vote", method=RequestMethod.GET)
 	public String voteResult(Principal principal)
 	{

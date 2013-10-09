@@ -120,23 +120,6 @@ public class MongoPlayerDAOTest {
 		}
 		
 	}
-
-	
-	@Test
-	public void testSetDead() {
-		Player p = new Player("1", false, 0.0, 0.0, "12", false, false, "him");
-		
-		playerDAO.createPlayer(p);
-		playerDAO.setDead(p);
-		
-		p.setDead(true);
-		
-		DBCollection coll = db.getCollection(testCollectionName);
-		DBObject obj = coll.findOne();		
-		Player p2 = playerDAO.convertFromObject(obj);
-		
-		assertTrue(playerDAO.equals(p, p2));			
-	}
 	
 	@Test
 	public void testGetAllAlive() {
@@ -241,27 +224,6 @@ public class MongoPlayerDAOTest {
 		assertTrue(true);
 	}
 	
-	@Test
-	public void testSetPlayerLocation(){
-		Player p = new Player("1", false, 0.0, 0.0, "12", false, false,"him");
-		playerDAO.createPlayer(p);
-		
-		GPSLocation gps = new GPSLocation(10.0, 10.0);
-		playerDAO.setPlayerLocation(p, gps);
-		
-		try{
-			
-			Player p2 = playerDAO.getPlayerByID(p.getId());
-			assertFalse(playerDAO.equals(p2, p));
-			p.setLat(10.0);
-			p.setLng(10.0);
-			assertTrue(playerDAO.equals(p2, p));			
-		}
-		catch(Exception e){
-			System.out.println(e.toString());
-			assertTrue(false);
-		}			
-	}
 	@Test
 	public void testGetPlayerByID_OneID() {
 		Player p = new Player("1", false, 0.0, 0.0, "12", false, false,"him");
