@@ -114,12 +114,16 @@
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
-			<groupId>javax.servlet</groupId>
+		    <groupId>javax.servlet</groupId>
+		    <artifactId>jstl</artifactId>
+		    <version>1.2</version>
+		</dependency>
+		<dependency>
+			<groupId>jstl</groupId>
 			<artifactId>jstl</artifactId>
 			<version>1.2</version>
-			<scope>provided</scope>
 		</dependency>
-
+            
 		<!-- Test -->
 		<dependency>
 			<groupId>junit</groupId>
@@ -160,12 +164,7 @@
 		</dependency>
 		
 		<!-- Tomcat -->
-		 <dependency>
-		     <groupId>jstl</groupId>
-		     <artifactId>jstl</artifactId>
-		     <version>1.2</version>
-		     <scope>provided</scope>
-		 </dependency>
+
 	</dependencies>
     <build>
         <plugins>
