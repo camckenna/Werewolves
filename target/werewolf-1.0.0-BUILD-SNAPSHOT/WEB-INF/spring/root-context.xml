@@ -25,7 +25,7 @@
 	<task:executor id="myExecutor" pool-size="5" />
 	<task:scheduler id="myScheduler" pool-size="10" />
 	
-	    <bean id="mongoURI" class="com.mongodb.MongoURI">
+	<bean id="mongoURI" class="com.mongodb.MongoURI">
       <constructor-arg value="mongodb://werewolves:werewolves@paulo.mongohq.com:10066/Werewolves"/>
     </bean>
   
