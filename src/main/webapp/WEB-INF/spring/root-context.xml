@@ -25,8 +25,17 @@
 	<task:executor id="myExecutor" pool-size="5" />
 	<task:scheduler id="myScheduler" pool-size="10" />
 	
+	<bean id="mongoURI" class="com.mongodb.MongoURI">
+      <constructor-arg value="mongodb://werewolves:werewolves@paulo.mongohq.com:10066/Werewolves"/>
+    </bean>
+  
+    <!-- create db object by calling getDB on mongo bean -->
+    <bean id="db" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
+      <property name="targetObject"><ref local="mongoURI"/></property>
+      <property name="targetMethod"><value>connectDB</value></property>
+    </bean>  
 		
-	<bean id="mongo" class="com.mongodb.MongoClient" />
+	
 	
 	<bean id="playerDAO" class="edu.wm.camckenna.werewolves.dao.MongoPlayerDAO"/>
 	<bean id="gameService" class="edu.wm.camckenna.werewolves.service.GameService" />

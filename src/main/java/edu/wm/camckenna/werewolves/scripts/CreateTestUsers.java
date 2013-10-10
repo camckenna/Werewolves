@@ -12,19 +12,19 @@ import com.mongodb.DBCollection;
 import com.mongodb.MongoClient;
 
 public class CreateTestUsers {
-	private static DB db;
+	
 	
 	public final static String COLLECTION_NAME = "USERS";
-	public final static String DATABASE_NAME = "WEREWOLVES";
 	
-	@Autowired private static MongoClient mongo;
+	//@Autowired private static MongoClient mongo;
+	@Autowired 
+	private static DB db;
 	
 	public static void main(String[] args) throws UnknownHostException{
-		mongo = new MongoClient("localhost", 27017);
+		/*mongo = new MongoClient("localhost", 27017);
 		db = mongo.getDB(DATABASE_NAME);
-		db.dropDatabase();
-		db = mongo.getDB(DATABASE_NAME);
-		
+		*/
+
 		createUsers();
 		
 		

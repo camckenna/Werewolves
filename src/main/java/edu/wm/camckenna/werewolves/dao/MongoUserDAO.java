@@ -33,15 +33,16 @@ import edu.wm.camckenna.werewolves.exceptions.NoUserFoundException;
 public class MongoUserDAO implements IUserDAO, UserDetailsService {
 
 	
-	private DB db;
+	//private DB db;
 	
 	public final static String COLLECTION_NAME = "USERS";
 	public final static String DATABASE_NAME = "WEREWOLVES";
 	
-	@Autowired private MongoClient mongo;
+	//@Autowired private MongoClient mongo;
+	@Autowired private DB db;
 	public MongoUserDAO() throws UnknownHostException {
-		mongo = new MongoClient("localhost", 27017);
-		db = mongo.getDB(DATABASE_NAME);
+		//mongo = new MongoClient("localhost", 27017);
+		//db = mongo.getDB(DATABASE_NAME);
 	}
 	@Override
 	public void createUser(User user) {

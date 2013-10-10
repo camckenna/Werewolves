@@ -20,14 +20,16 @@ import edu.wm.camckenna.werewolves.domain.Player;
 
 public class MongoKillDAO implements IKillDAO {
 	
-	private DB db;
+	//private DB db;
 	public final static String COLLECTION_NAME = "KILLS";
 	public final static String DATABASE_NAME = "WEREWOLVES";
 	
-	@Autowired private MongoClient mongo;
+	//@Autowired private MongoClient mongo;
+	@Autowired private DB db;
 	public MongoKillDAO() throws UnknownHostException{
-		mongo = new MongoClient("localhost", 27017);
+		/*mongo = new MongoClient("localhost", 27017);
 		db = mongo.getDB(DATABASE_NAME);
+		*/
 	}
 	@Override
 	public void addKill(Kill kill) {

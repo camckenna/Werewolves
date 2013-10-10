@@ -26,16 +26,17 @@ import edu.wm.camckenna.werewolves.service.GameService;
 public class MongoPlayerDAO implements IPlayerDAO {
 	
 	private static final Logger logger = LoggerFactory.getLogger(MongoPlayerDAO.class);
-	private DB db;
+	//private DB db;
 	
 	public String COLLECTION_NAME;
 	public final static String DATABASE_NAME = "WEREWOLVES";
 	
-	@Autowired private MongoClient mongo;
-	
+	//@Autowired private MongoClient mongo;
+	@Autowired private DB db;
 	public MongoPlayerDAO() throws UnknownHostException {
-		mongo = new MongoClient("localhost", 27017);
+		/*mongo = new MongoClient("localhost", 27017);
 		db = mongo.getDB(DATABASE_NAME);
+		*/
 		COLLECTION_NAME = "PLAYERS";
 	}
 	

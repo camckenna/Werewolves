@@ -20,14 +20,16 @@ import edu.wm.camckenna.werewolves.domain.Player;
 
 public class MongoVoteDAO implements IVoteDAO {
 
-	private DB db;
+	//private DB db;
 	public String COLLECTION_NAME;
 	public final static String DATABASE_NAME = "WEREWOLVES";
 	
-	@Autowired private MongoClient mongo;
+	//@Autowired private MongoClient mongo;
+	@Autowired private DB db;
 	public MongoVoteDAO() throws UnknownHostException{
-		mongo = new MongoClient("localhost", 27017);
+		/*mongo = new MongoClient("localhost", 27017);
 		db = mongo.getDB(DATABASE_NAME);
+		*/
 		COLLECTION_NAME = "VOTES";
 	}
 	public void setCollectionName(String coll){
