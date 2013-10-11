@@ -415,11 +415,9 @@ public class GameService {
 			
 
 	}
-	public List<Player> getAllNearby(String name){
+	public List<Player> getAllNearby(String name){		
 		
-		
-		try {
-			Player killer = playerDAO.getPlayerbyUsername(name);
+			Player killer = convertFromPrincipalNameToPlayer(name);
 		/*	if(!killer.isWerewolf()){ //cannot get nearby for townspeople
 				return null;
 			}*/
@@ -435,11 +433,6 @@ public class GameService {
 			}
 			
 			return nearbyPlayers;
-		} catch (NoPlayerFoundException | MultiplePlayersWithSameIDException e) {
-			logger.info("Problem with Player with username: " + name);
-			return null;
-		}
-
 	}
 
 	public List<String> getAllAliveAsStrings() {
