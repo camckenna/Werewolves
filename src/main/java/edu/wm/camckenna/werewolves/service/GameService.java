@@ -423,10 +423,10 @@ public class GameService {
 			}*/
 			List<Player> allAlive = getAllAlive();
 			List<Player> nearbyPlayers = new ArrayList<Player>();
-			
+			assert(killer != null);
 			for(Player p : allAlive){
 				if(!p.getUsername().equals(killer.getUsername())){ //different people
-					if(GameServiceUtil.isInRange(killer, p, game.getScentRadius())){
+					if(GameServiceUtil.isInRange(killer, p, 1)){
 						nearbyPlayers.add(p);
 					}
 				}
