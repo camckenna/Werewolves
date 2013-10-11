@@ -91,10 +91,8 @@ public class HomeController {
 		List<Player> players = gameService.getAllAlive();
 		return players;
 	}
-	/*
-	 * TODO
-	 * This needs to be POST when I finally understand how that works
-	 */
+
+
 	@RequestMapping(value = "/start", method= RequestMethod.GET)
 	public String startGame()
 	{
@@ -139,13 +137,13 @@ public class HomeController {
 		return (principal.getName() + " attempted to kill " + name);
 	}
  
-	@RequestMapping(value= "/location", method=RequestMethod.GET)
-	public @ResponseBody JsonResponse setLocation(@ModelAttribute GPSLocation location, Principal principle){
+	@RequestMapping(value= "/location", method=RequestMethod.POST)
+	public @ResponseBody String setLocation(@RequestParam("lat") double lat, 
+			@RequestParam("lng") double lng, Principal principal){		
 		
-		JsonResponse response = new JsonResponse();
-		logger.info("Setting for " + principle.getName() + "'s location to: " + location);
-		gameService.updatePosition(principle.getName(), location);
-		return response;			
+		logger.info("Setting for " + principal.getName() + "'s location to: " + lat + ", " + lng);
+		gameService.updatePosition(principal.getName(), lat, lng);
+		return "Setting for " + principal.getName() + "'s location to: " + lat + ", " + lng;
 	}
 
 

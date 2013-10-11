@@ -329,8 +329,12 @@ public class GameService {
 		}
 	}
 
-	public void updatePosition(String name, GPSLocation location) {
+	public void updatePosition(String name, double lat, double lng) {
 		
+		Player player = convertFromPrincipalNameToPlayer(name);
+		player.setLat(lat);
+		player.setLng(lng);
+		updatePlayer(player);
 	}
 	private User convertFromPrincipalNameToUser(String name){
 		try{
@@ -351,9 +355,8 @@ public class GameService {
 	public Player getPlayerInfo(String name){
 		return convertFromPrincipalNameToPlayer(name);
 	}
+	//Change to boolean
 	public void kill(String killerName, String victimName){
-		
-		//Check for distance
 	
 			Player victim = getPlayerByUsername(victimName);
 			Player killer = getPlayerByUsername(killerName);
@@ -368,7 +371,7 @@ public class GameService {
 				logger.info("Cannot kill at this time");
 				return;
 			}				
-			double chanceToCounterAttack = 0.5 * ((double)getAllAliveWerewolves().size()/getAllPlayers().size());
+			double chanceToCounterAttack = 0.5 * (((double)getAllAliveWerewolves().size())/getAllPlayers().size());
 			if(chanceToCounterAttack > Math.random()){
 				logger.info("YOWZAH! Counterattack!" + victim.getUsername() + " countered and killed " + killer.getUsername());
 				killer.setDead(true);

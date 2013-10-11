@@ -77,7 +77,7 @@ public class User implements Comparable{
 	
 public int compareTo(Object obj){
 	User user = (User)obj;
-	return (this.score - user.getScore());
+	return (user.getScore() - this.score);
 	}
 public void increaseScore(int i) {
 	this.score+=i;
