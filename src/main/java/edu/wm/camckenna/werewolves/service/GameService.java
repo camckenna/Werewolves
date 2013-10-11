@@ -424,9 +424,9 @@ public class GameService {
 	public List<String> getAllNearby(String name){		
 		
 			Player killer = convertFromPrincipalNameToPlayer(name);
-		/*	if(!killer.isWerewolf()){ //cannot get nearby for townspeople
-				return null;
-			}*/
+			if(!killer.isWerewolf()){ //cannot get nearby for townspeople
+				return new ArrayList<String>();
+			}
 			List<Player> allAlive = getAllAlive();
 			List<String> nearbyPlayers = new ArrayList<String>();
 			assert(killer != null);
