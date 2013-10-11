@@ -76,9 +76,19 @@ public class HomeController {
 		// add responseBody to package as a JSON object
 		return gameService.getAllAliveAsStrings();
 	}
-	/**
-	 * TODO: get Nearby
-	 */
+
+	@RequestMapping(value = "/dayToNight", method=RequestMethod.POST)
+	public @ResponseBody String switchToNight()
+	{
+		gameService.switchFromDayToNight();
+		return "Switching to night";
+	}
+	@RequestMapping(value = "/nightToDay", method=RequestMethod.POST)
+	public @ResponseBody String switchToDay()
+	{
+		gameService.switchFromNightToDay();
+		return "Switching to day";
+	}
 	@RequestMapping(value = "/nearby", method=RequestMethod.GET)
 	public @ResponseBody List<String> getAllNearby(Principal principal)
 	{

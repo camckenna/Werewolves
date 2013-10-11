@@ -21,6 +21,8 @@
         <intercept-url pattern="/nearby" access="ROLE_USER" />
          <intercept-url pattern="/info" access="ROLE_USER" />
         <intercept-url pattern="/start" access="ROLE_ADMIN" />
+        <intercept-url pattern="/nightToDay" access="ROLE_ADMIN" />
+        <intercept-url pattern="/dayToNight" access="ROLE_ADMIN" />
         <http-basic /> 
         <logout logout-success-url="/home" />
     </http>
