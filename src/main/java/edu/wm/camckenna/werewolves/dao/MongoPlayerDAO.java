@@ -251,8 +251,7 @@ public class MongoPlayerDAO implements IPlayerDAO {
 		}
 		if(cursor.hasNext()){
 		DBObject obj = cursor.next();
-		logger.info("Cursor has an object");
-		assert(obj != null);
+
 		return convertFromObject(obj);
 		}
 		throw new NoPlayerFoundException(username);

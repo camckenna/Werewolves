@@ -233,14 +233,14 @@ public class GameService {
 		}
 		return namesAndScore;
 	}
-	public BooleanMessage voteForPlayer(String voterString, String votedAgainstString){
+	public void voteForPlayer(String voterString, String votedAgainstString){
 		try{
 		Player voter = convertFromPrincipalNameToPlayer(voterString);
 		Player votedAgainst = convertFromPrincipalNameToPlayer(votedAgainstString);
 		
 		if(!GameServiceUtil.canVote(voter, votedAgainst)){
 			logger.info("Cannot vote at this time");
-			return new BooleanMessage(false,"Cannot vote at this time");
+			return;
 		}
 		
 		voter.setVotedAgainst(votedAgainst.getUsername());
@@ -248,11 +248,12 @@ public class GameService {
 		voteDAO.addVote(vote);
 
 		updatePlayer(voter);
-		return new BooleanMessage(true,voterString + " voted for " + votedAgainst);
+		//return new BooleanMessage(true,voterString + " voted for " + votedAgainst);
 		
 		}
 		catch(Exception e){
-			return new BooleanMessage(false, "There was an exception: " + e.toString());
+			logger.info(e.toString());
+			//return new BooleanMessage(false, "There was an exception: " + e.toString());
 		}
 	}
 	public void hangPlayer() {

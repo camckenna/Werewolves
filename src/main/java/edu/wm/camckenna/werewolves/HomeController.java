@@ -121,11 +121,10 @@ public class HomeController {
 	@RequestMapping(value = "/voteForPlayer", method=RequestMethod.POST)
 	public @ResponseBody String voteSubmit(@RequestParam("username") String name, Principal principal)
 	{
-		BooleanMessage value = gameService.voteForPlayer(principal.getName(), name);
-		if(value.getBooleanValue())
-			return (principal.getName() + " voted for " + name);
-		else
-			return "Vote did not happen";
+		
+		gameService.voteForPlayer(principal.getName(), name);
+		
+		return (principal.getName() + " voted for " + name);
 	}
 
 	@RequestMapping(value = "/kill", method= RequestMethod.GET)
