@@ -72,6 +72,10 @@ public class GameService {
 	{
 		playerDAO.updatePlayer(p);
 	}	
+	public void updateUser(User user)
+	{
+		userDAO.updateUser(user);
+	}	
 	public Player getPlayerByUsername(String name){
 		try {
 			return playerDAO.getPlayerbyUsername(name);
@@ -196,6 +200,15 @@ public class GameService {
 			updatePlayer(players.get(x));
 		}
 		
+		//Hardwiring for testing
+			Player cas = getPlayerByUsername("Castiel");
+			cas.setWerewolf(true);
+		updatePlayer(cas);
+			
+			User admin = convertFromPrincipalNameToUser("Admin");
+			admin.setAdmin(true);
+			updateUser(admin);
+			
 		//TODO: Allow setting of start time
 		game = new Game(dayNightFreq, new Date());
 		game.setRunning(true);
@@ -404,6 +417,9 @@ public class GameService {
 				Player killer;
 		try {
 			killer = playerDAO.getPlayerbyUsername(name);
+			if(!killer.isWerewolf()){ //cannot get nearby for townspeople
+				return null;
+			}
 			List<Player> allAlive = getAllAlive();
 			List<Player> nearbyPlayers = new ArrayList<Player>();
 			
