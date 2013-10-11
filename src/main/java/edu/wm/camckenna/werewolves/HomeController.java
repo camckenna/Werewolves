@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
+import edu.wm.camckenna.werewolves.domain.BooleanMessage;
 import edu.wm.camckenna.werewolves.domain.GPSLocation;
 import edu.wm.camckenna.werewolves.domain.JsonResponse;
 import edu.wm.camckenna.werewolves.domain.Kill;
@@ -120,8 +121,11 @@ public class HomeController {
 	@RequestMapping(value = "/voteForPlayer", method=RequestMethod.POST)
 	public @ResponseBody String voteSubmit(@RequestParam("username") String name, Principal principal)
 	{
-		gameService.voteForPlayer(principal.getName(), name);
-		return (principal.getName() + " voted for " + name);
+		BooleanMessage value = gameService.voteForPlayer(principal.getName(), name);
+		if(value.getBooleanValue())
+			return (principal.getName() + " voted for " + name);
+		else
+			return "Vote did not happen";
 	}
 
 	@RequestMapping(value = "/kill", method= RequestMethod.GET)
