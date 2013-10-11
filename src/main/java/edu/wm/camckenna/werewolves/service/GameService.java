@@ -154,7 +154,7 @@ public class GameService {
 		double killRange;
 		double scentRange;
 		
-		if(GameServiceUtil.isValidFreq(freq))
+		/*if(GameServiceUtil.isValidFreq(freq))
 			dayNightFreq = Integer.parseInt(freq);
 		else
 			dayNightFreq = Integer.parseInt(Values.TEST_DAYNIGHTFREQ);
@@ -166,8 +166,11 @@ public class GameService {
 		else{
 			scentRange = Double.parseDouble(Values.DEFAULT_SCENTRANGE);
 			killRange = Double.parseDouble(Values.DEFAULT_KILLRANGE);
-		}
+		}*/
 		
+			dayNightFreq = Integer.parseInt(Values.TEST_DAYNIGHTFREQ);
+			scentRange = Double.parseDouble(Values.DEFAULT_SCENTRANGE);
+			killRange = Double.parseDouble(Values.DEFAULT_KILLRANGE);
 		logger.info("Starting game!");
 		playerDAO.discardTable();
 		killDAO.discardTable();
@@ -212,8 +215,9 @@ public class GameService {
 		//TODO: Allow setting of start time
 		game = new Game(dayNightFreq, new Date());
 		game.setRunning(true);
-		game.setScentRadius(scentRange);
-		game.setKillRadius(killRange);		
+		game.setDayNightFreq(1);
+		game.setScentRadius(1);
+		game.setKillRadius(0.1);		
 
 	}
 	public void startGame(){
@@ -229,8 +233,6 @@ public class GameService {
 		return namesAndScore;
 	}
 	public BooleanMessage voteForPlayer(String voterString, String votedAgainstString){
-		//logger.info(voterString + " voted for " + votedAgainstString);
-		//Need validation before here
 		try{
 		Player voter = convertFromPrincipalNameToPlayer(voterString);
 		Player votedAgainst = convertFromPrincipalNameToPlayer(votedAgainstString);
