@@ -80,9 +80,9 @@ public class HomeController {
 	 * TODO: get Nearby
 	 */
 	@RequestMapping(value = "/nearby", method=RequestMethod.GET)
-	public @ResponseBody List<Player> getAllNearby(Principal principal)
+	public @ResponseBody List<String> getAllNearby(Principal principal)
 	{
-		List<Player> players = gameService.getAllNearby(principal.getName());
+		List<String> players = gameService.getAllNearby(principal.getName());
 		return players;
 	}
 	@RequestMapping(value = "/votable", method=RequestMethod.GET)

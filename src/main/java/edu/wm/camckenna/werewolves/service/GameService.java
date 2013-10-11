@@ -421,19 +421,19 @@ public class GameService {
 			
 
 	}
-	public List<Player> getAllNearby(String name){		
+	public List<String> getAllNearby(String name){		
 		
 			Player killer = convertFromPrincipalNameToPlayer(name);
 		/*	if(!killer.isWerewolf()){ //cannot get nearby for townspeople
 				return null;
 			}*/
 			List<Player> allAlive = getAllAlive();
-			List<Player> nearbyPlayers = new ArrayList<Player>();
+			List<String> nearbyPlayers = new ArrayList<String>();
 			assert(killer != null);
 			for(Player p : allAlive){
 				if(!p.getUsername().equals(killer.getUsername())){ //different people
 					if(GameServiceUtil.isInRange(killer, p, 1)){
-						nearbyPlayers.add(p);
+						nearbyPlayers.add(p.getUsername());
 					}
 				}
 			}
