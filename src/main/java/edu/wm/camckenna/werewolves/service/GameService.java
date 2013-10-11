@@ -416,12 +416,12 @@ public class GameService {
 	}
 	public List<Player> getAllNearby(String name){
 		
-				Player killer;
+		
 		try {
-			killer = playerDAO.getPlayerbyUsername(name);
-			if(!killer.isWerewolf()){ //cannot get nearby for townspeople
+			Player killer = playerDAO.getPlayerbyUsername(name);
+		/*	if(!killer.isWerewolf()){ //cannot get nearby for townspeople
 				return null;
-			}
+			}*/
 			List<Player> allAlive = getAllAlive();
 			List<Player> nearbyPlayers = new ArrayList<Player>();
 			

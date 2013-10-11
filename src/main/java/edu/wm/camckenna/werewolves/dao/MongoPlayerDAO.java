@@ -253,8 +253,10 @@ public class MongoPlayerDAO implements IPlayerDAO {
 		if(cursor.count() > 1){
 			throw new MultiplePlayersWithSameIDException(username, cursor.count());
 		}
-		
+		if(cursor.hasNext()){
 		DBObject obj = cursor.next();
 		return convertFromObject(obj);
+		}
+		throw new NoPlayerFoundException(username);
 	}
 }
