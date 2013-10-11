@@ -207,7 +207,7 @@ public class GameService {
 		//Hardwiring for testing
 			Player cas = getPlayerByUsername("Castiel");
 			cas.setWerewolf(true);
-		updatePlayer(cas);
+			updatePlayer(cas);
 			
 			User admin = convertFromPrincipalNameToUser("Admin");
 			admin.setAdmin(true);
@@ -362,7 +362,7 @@ public class GameService {
 	}
 	private User convertFromPrincipalNameToUser(String name){
 		try{
-			return userDAO.getUserById(name);
+			return userDAO.getUserByUsername(name);
 		}
 		catch(MultipleUsersWithSameIDException e){
 			logger.error("Too many users found for username: " + name);
