@@ -209,6 +209,11 @@ public class GameService {
 			cas.setWerewolf(true);
 			updatePlayer(cas);
 			
+			Player joenash = getPlayerByUsername("joenash");
+			joenash.setWerewolf(false);
+			updatePlayer(joenash);
+			
+			
 			User admin = convertFromPrincipalNameToUser("Admin");
 			admin.setAdmin(true);
 			updateUser(admin);
