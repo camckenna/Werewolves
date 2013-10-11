@@ -14,14 +14,10 @@ import com.mongodb.DB;
 import com.mongodb.DBCollection;
 import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
-import com.mongodb.MongoClient;
-import com.mongodb.QueryBuilder;
 
-import edu.wm.camckenna.werewolves.domain.GPSLocation;
 import edu.wm.camckenna.werewolves.domain.Player;
 import edu.wm.camckenna.werewolves.exceptions.MultiplePlayersWithSameIDException;
 import edu.wm.camckenna.werewolves.exceptions.NoPlayerFoundException;
-import edu.wm.camckenna.werewolves.service.GameService;
 
 public class MongoPlayerDAO implements IPlayerDAO {
 	
@@ -255,6 +251,8 @@ public class MongoPlayerDAO implements IPlayerDAO {
 		}
 		if(cursor.hasNext()){
 		DBObject obj = cursor.next();
+		logger.info("Cursor has an object");
+		assert(obj != null);
 		return convertFromObject(obj);
 		}
 		throw new NoPlayerFoundException(username);
