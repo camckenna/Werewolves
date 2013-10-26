@@ -9,7 +9,9 @@ public class Player {
 	private double lng;
 	private String username;
 	private boolean isWerewolf;
+	private boolean isHunter;
 	private boolean canKill;
+	private boolean hasReported;
 	private String votedAgainst;
 	
 	public Player(String id, boolean isDead, double lat, double lng,
@@ -21,8 +23,11 @@ public class Player {
 		this.lng = lng;
 		this.username = username;
 		this.isWerewolf = isWerewolf;
+		this.isHunter = false;
 		this.canKill = canKill;
+		this.hasReported = true;
 		this.votedAgainst = votedAgainst;
+
 	}
 	public Player() {
 		super();
@@ -36,6 +41,13 @@ public class Player {
 		this.isWerewolf = isWerewolf;
 	}
 
+	public boolean isHunter() {
+		return isHunter;
+	}
+	public void setHunter(boolean isHunter) {
+		this.isHunter = isHunter;
+	}
+	
 	public String getId() {
 		return id;
 	}
@@ -59,6 +71,12 @@ public class Player {
 	}
 	public void setLng(double lng) {
 		this.lng = lng;
+	}
+	public boolean hasReported() {
+		return hasReported;
+	}
+	public void setHasReported(boolean hasReported) {
+		this.hasReported = hasReported;
 	}
 	public String getUsername() {
 		return username;

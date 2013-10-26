@@ -5,6 +5,8 @@ import java.text.DateFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
+import java.util.UUID;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,6 +15,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.ui.Model;
+import org.springframework.ui.ModelMap;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -20,14 +24,21 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.servlet.ModelAndView;
 
+import edu.wm.camckenna.validators.ChangePasswordUserValidator;
+import edu.wm.camckenna.validators.TempUserValidator;
 import edu.wm.camckenna.werewolves.domain.BooleanMessage;
+import edu.wm.camckenna.werewolves.domain.ChangePasswordUser;
 import edu.wm.camckenna.werewolves.domain.GPSLocation;
 import edu.wm.camckenna.werewolves.domain.JsonResponse;
 import edu.wm.camckenna.werewolves.domain.Kill;
 import edu.wm.camckenna.werewolves.domain.Player;
+import edu.wm.camckenna.werewolves.domain.TempUser;
+import edu.wm.camckenna.werewolves.domain.User;
 import edu.wm.camckenna.werewolves.domain.Vote;
 import edu.wm.camckenna.werewolves.service.GameService;
+import edu.wm.camckenna.werewolves.service.UserService;
 
 
 
@@ -40,6 +51,7 @@ public class HomeController {
 	private static final Logger logger = LoggerFactory.getLogger(HomeController.class);
 	
 	@Autowired GameService gameService;
+	@Autowired UserService userService;
 	// Autowired finds a satisfied bean of being a playerDAO and connects the controller to it
 	// Beans are defined in root-context (these are the Singleton classes)
 	
@@ -175,6 +187,106 @@ public class HomeController {
 	@RequestMapping(value= "/info", method=RequestMethod.GET)
 	public @ResponseBody Player getStatus(Principal principal){				
 		return gameService.getPlayerInfo(principal.getName());
+	}
+	@RequestMapping(value= "/listOfPlayers", method=RequestMethod.GET)
+	public @ResponseBody Map<String, String> getListOfPlayers(Principal principal){				
+		return gameService.getListOfPlayers(principal.getName());
+	}
+	@RequestMapping(value= "/day", method=RequestMethod.GET)
+	public @ResponseBody boolean getDayOrNight(Principal principal){				
+		return gameService.getDayOrNight();
+	}
+	@RequestMapping(value= "/getVotes", method=RequestMethod.GET)
+	public @ResponseBody List<Vote> getVotes(Principal principal){				
+		return gameService.getVotes(principal.getName());
+	}
+	@RequestMapping(value= "/getKills", method=RequestMethod.GET)
+	public @ResponseBody List<Kill> getKills(Principal principal){				
+		return gameService.getKills(principal.getName());
+	}
+	
+	/*
+	@RequestMapping(value = "/register", method=RequestMethod.POST)
+	public @ResponseBody String register(
+			@RequestParam("email") String email,
+			@RequestParam("firstName") String firstName, 
+			@RequestParam("lastName") String lastName,
+			@RequestParam("username") String username,
+			@RequestParam("password") String password,
+			@RequestParam("confirmPassword") String confirmPassword
+			){
+		
+		userService.createAccount(new User(UUID.randomUUID().toString(), firstName, lastName, username, email, password, null));
+				
+		return ("Registered");
+	}*/
+	@RequestMapping(value = "/register", method=RequestMethod.GET)
+	public ModelAndView register() {
+		return new ModelAndView("register", "command", new TempUser());
+	}
+	
+	@RequestMapping(value = "/register", method = RequestMethod.POST)
+	public String addStudent(@ModelAttribute TempUser tempUser, BindingResult result) {
+
+		
+	      logger.info("Got to the Post");
+	      logger.info(tempUser.getUsername());
+	      TempUserValidator validator = new TempUserValidator();
+	      validator.validate(tempUser, result);
+	      if(result.hasErrors()){
+	    	  logger.info("There were errors");
+	    	  return "redirect:/home";
+	      }
+	      else{
+	    	  logger.info("Going to user service");
+		      userService.createAccount(tempUser);
+		      return "registered";
+	      }	     
+	 }
+	@RequestMapping(value = "/delete", method=RequestMethod.GET)
+	public String deletePage(Principal principal) {
+		return "delete";
+	}	
+	@RequestMapping(value = "/delete", method= RequestMethod.POST)
+	public String deleteAccount(Principal principal, @RequestParam("password") String password)
+	{
+		if(userService.deleteAccount(principal.getName(), password)){
+			return "redirect:/home"; 
+		}
+		else{
+	    	  logger.info("There were errors");
+	    	  return "redirect:/";
+		}
+		
+	}
+	/*
+	@RequestMapping(value = "/update", method=RequestMethod.GET)
+	public ModelAndView updatePage(Principal principal) {
+		return new ModelAndView("update", "command", new ChangePasswordUser());
+	}	
+	@RequestMapping(value = "/update", method= RequestMethod.POST)
+	public String updateAccount(Principal principal, 
+			@ModelAttribute ChangePasswordUser changePasswordUser, BindingResult result)
+	{
+		changePasswordUser.setUsername(principal.getName());
+	      ChangePasswordUserValidator validator = new ChangePasswordUserValidator();
+	      validator.validate(changePasswordUser, result);
+	      if(result.hasErrors()){
+	    	  logger.info("There were errors");
+	    	  return "redirect:/";
+	      }
+	      else{
+	    	  logger.info("Going to user service");
+		      userService.updateAccount(changePasswordUser, principal.getName());
+		      return "redirect:/update";
+	      }	     
+	}*/
+	
+	
+	@RequestMapping(value = "/gameStats", method= RequestMethod.GET)
+	public Map<String, Integer> getGameStats()
+	{
+		return gameService.getGameStats();
 	}
 	
 }

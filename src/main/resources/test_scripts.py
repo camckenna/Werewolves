@@ -129,6 +129,13 @@ def test_werewolves():
 	print(r.text)
 
 	raw_input(">")
+
+	print("Here is a list of nearby players for joenash, a townsperson. It is empty because townspeople do not have this functionality.")
+	r = requests.get('https://infinite-earth-3076.herokuapp.com/nearby', auth=('joenash', 'letmein'))
+	print(r.text)
+
+	raw_input(">")
+
 	print("Admin: Switching to Night")
 	r = requests.post("https://infinite-earth-3076.herokuapp.com/dayToNight", auth=('Admin', 'letmein'))
 	

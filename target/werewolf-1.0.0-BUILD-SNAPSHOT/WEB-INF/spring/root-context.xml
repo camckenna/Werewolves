@@ -39,6 +39,7 @@
 	
 	<bean id="playerDAO" class="edu.wm.camckenna.werewolves.dao.MongoPlayerDAO"/>
 	<bean id="gameService" class="edu.wm.camckenna.werewolves.service.GameService" />
+	<bean id="userService" class="edu.wm.camckenna.werewolves.service.UserService" />
 	<bean id="userDAO" class="edu.wm.camckenna.werewolves.dao.MongoUserDAO" />
 	<bean id="voteDAO" class="edu.wm.camckenna.werewolves.dao.MongoVoteDAO" />
 	<bean id="killDAO" class="edu.wm.camckenna.werewolves.dao.MongoKillDAO" />

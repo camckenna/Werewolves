@@ -6,7 +6,6 @@ import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.GrantedAuthorityImpl;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -29,7 +28,7 @@ public class UserCredentialsDetailsService implements UserDetailsService {
 		try {
 			user = userDAO.getUserByUsername(username);
 		} catch (NoUserFoundException | MultipleUsersWithSameIDException e) {
-			// TODO Auto-generated catch block
+			
 			e.printStackTrace();
 		} 
 	    if (user == null) { 

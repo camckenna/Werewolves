@@ -21,12 +21,17 @@ public interface IPlayerDAO {
 	List<Player> getAllAlive();
 	List<Player> getAllDead();	
 	List<Player> getAllTownspeople();
+	List<Player> getAllAliveTownspeople();
 	List<Player> getAllWerewolves();
 	List<Player> getAllAliveWerewolves();
+	List<Player> getAllHunters();
+	List<Player> getAllAliveHunters();
 	
 	boolean equals(Player p1, Player p2);
 	
 	Player getPlayerByID(String id) throws NoPlayerFoundException, MultiplePlayersWithSameIDException;
 	Player getPlayerbyUsername(String username) throws NoPlayerFoundException, MultiplePlayersWithSameIDException;
+
+	
 	
 }

@@ -15,7 +15,7 @@ Completed
 -Scores, list of alive players
 -scripts 
 -Restarting the game if admin
--nearby players (currently for all players)
+-nearby players 
 
 
 In Progress

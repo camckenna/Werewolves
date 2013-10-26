@@ -53,8 +53,10 @@ public class MongoPlayerDAO implements IPlayerDAO {
 		doc.put("lng", player.getLng());
 		doc.put("lat",player.getLat());
 		doc.put("username", player.getUsername());
-		doc.put("isWerewolf", player.isWerewolf()); 
+		doc.put("isWerewolf", player.isWerewolf());
+		doc.put("isHunter", player.isHunter());
 		doc.put("canKill", player.getCanKill());
+		doc.put("hasReported", player.hasReported());
 		doc.put("votedAgainst", player.getVotedAgainst());
 		playerColl.insert(doc);
 	}
@@ -71,7 +73,9 @@ public class MongoPlayerDAO implements IPlayerDAO {
 		doc.put("lat",player.getLat());
 		doc.put("username", player.getUsername());
 		doc.put("isWerewolf", player.isWerewolf()); 
+		doc.put("isHunter", player.isHunter());
 		doc.put("canKill", player.getCanKill());
+		doc.put("hasReported", player.hasReported());
 		doc.put("votedAgainst", player.getVotedAgainst());
 	 
 		BasicDBObject updateObj = new BasicDBObject();
@@ -97,7 +101,9 @@ public class MongoPlayerDAO implements IPlayerDAO {
 				&& BigDecimal.valueOf(p1.getLng()).equals(BigDecimal.valueOf(p2.getLng()))
 				&& p1.getUsername().equals(p2.getUsername()) 
 				&& p1.isWerewolf() == p2.isWerewolf()
+				&& p1.isHunter() == p2.isHunter()
 				&& p1.getCanKill() == p2.getCanKill()
+				&& p1.hasReported() == p2.hasReported()	
 				&& p1.getVotedAgainst().equals(p2.getVotedAgainst());			
 	}
 	
@@ -160,6 +166,24 @@ public class MongoPlayerDAO implements IPlayerDAO {
 		}
 		return players;
 	}
+	
+	@Override
+	public List<Player> getAllAliveTownspeople() {
+		List<Player> players = new ArrayList<>();
+		DBCollection playerColl = getCollection();	
+		 
+		BasicDBObject searchQuery = new BasicDBObject();
+		searchQuery.put("isWerewolf", false);
+		searchQuery.put("isDead", false);
+		
+		DBCursor cursor = playerColl.find(searchQuery);
+		
+		while(cursor.hasNext()){
+			Player p = convertFromObject(cursor.next());
+			players.add(p);
+		}
+		return players;
+	}
 
 	@Override
 	public List<Player> getAllWerewolves() {
@@ -195,6 +219,41 @@ public class MongoPlayerDAO implements IPlayerDAO {
 		}
 		return players;
 	}
+	@Override
+	public List<Player> getAllHunters() {
+		List<Player> players = new ArrayList<>();
+		DBCollection playerColl = getCollection();	
+		 
+		BasicDBObject searchQuery = new BasicDBObject();
+		searchQuery.put("isHunter", true);
+		
+		DBCursor cursor = playerColl.find(searchQuery);
+		
+		while(cursor.hasNext()){
+			Player p = convertFromObject(cursor.next());
+			players.add(p);
+		}
+		return players;
+	}
+
+	@Override
+	public List<Player> getAllAliveHunters() {
+		List<Player> players = new ArrayList<>();
+		DBCollection playerColl = getCollection();	
+		 
+		BasicDBObject searchQuery = new BasicDBObject();
+		searchQuery.put("isHunter", true);
+		searchQuery.put("isDead", false);
+		
+		DBCursor cursor = playerColl.find(searchQuery);
+		
+		while(cursor.hasNext()){
+			Player p = convertFromObject(cursor.next());
+			players.add(p);
+		}
+		return players;
+	}
+
 
 	@Override
 	public Player getPlayerByID(String id) throws NoPlayerFoundException, MultiplePlayersWithSameIDException {
@@ -227,7 +286,9 @@ public class MongoPlayerDAO implements IPlayerDAO {
 		p.setLat((double)obj.get("lat"));
 		p.setUsername((String)obj.get("username"));
 		p.setWerewolf((boolean)obj.get("isWerewolf"));
+		p.setHunter((boolean)obj.get("isHunter"));
 		p.setCanKill((boolean)obj.get("canKill"));
+		p.setHasReported((boolean)obj.get("hasReported"));
 		p.setVotedAgainst((String)obj.get("votedAgainst"));
 				
 		return p;

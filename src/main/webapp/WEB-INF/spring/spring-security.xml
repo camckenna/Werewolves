@@ -20,11 +20,19 @@
         <intercept-url pattern="/location" access="ROLE_USER" />
         <intercept-url pattern="/nearby" access="ROLE_USER" />
          <intercept-url pattern="/info" access="ROLE_USER" />
+         <intercept-url pattern="/listOfPlayers" access="ROLE_USER" />
+         <intercept-url pattern="/day" access="ROLE_USER" />
+         <intercept-url pattern="/delete" access="ROLE_USER" />
+         <intercept-url pattern="/getVotes" access="ROLE_USER" />
+         <intercept-url pattern="/getKills" access="ROLE_USER" />
+         <intercept-url pattern="/deleteAccount" access="ROLE_USER" />
+         <intercept-url pattern="/updateAccount" access="ROLE_USER" />
+         <intercept-url pattern="/gameStats" access="ROLE_USER" />
         <intercept-url pattern="/start" access="ROLE_ADMIN" />
         <intercept-url pattern="/nightToDay" access="ROLE_ADMIN" />
         <intercept-url pattern="/dayToNight" access="ROLE_ADMIN" />
         <http-basic /> 
-        <logout logout-success-url="/home" />
+        <logout logout-success-url="/home" logout-url="/logout" invalidate-session="true"/>
     </http>
     
     	   

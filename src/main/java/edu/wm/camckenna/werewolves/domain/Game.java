@@ -7,7 +7,7 @@ public class Game {
 	private int dayNightFreq;	
 	private Date createdDate;
 	private boolean isRunning;
-	private long timer;
+	private boolean isDay;
 	private double scentRadius; //in kilometer
 	private double killRadius;
 	
@@ -15,9 +15,9 @@ public class Game {
 		super();
 		this.dayNightFreq = dayNightFreq;
 		this.createdDate = createdDate;
-		this.timer = 0;
-		this.scentRadius = 1; 
-		this.killRadius = 0.1; 
+		this.isDay = true;
+		this.scentRadius = 0.1; 
+		this.killRadius = 0.01; 
 	}
 	public int getDayNightFreq() {
 		return dayNightFreq;
@@ -37,11 +37,11 @@ public class Game {
 	public void setRunning(boolean isRunning) {
 		this.isRunning = isRunning;
 	}
-	public long getTimer() {
-		return timer;
+	public boolean isDay() {
+		return this.isDay;
 	}
-	public void setTimer(long timer) {
-		this.timer = timer;
+	public void setDay(boolean day) {
+		this.isDay = day;
 	}
 	public double getScentRadius() {
 		return scentRadius;

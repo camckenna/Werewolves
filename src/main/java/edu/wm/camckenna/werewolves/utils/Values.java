@@ -14,7 +14,9 @@ public class Values {
 	 * Point values
 	 */
 	public static final int VOTING_POINTS = 30;
-	public static final int LIVING_POINTS = 5;
+	public static final int LIVING_POINTS = 1;
+	public static final int ON_WINNING_SIDE_POINTS = 5;
+	public static final int SURVIVED_UNTIL_END_POINTS = 10;
 	public static final int KILL_POINTS = 15;
 	public static final int WINNER_POINTS = 60;
 	public static final int COUNTERATTACK_POINTS = 45;

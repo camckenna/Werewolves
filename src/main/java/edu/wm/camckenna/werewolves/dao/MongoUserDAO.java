@@ -54,10 +54,12 @@ public class MongoUserDAO implements IUserDAO, UserDetailsService {
 		doc.put("firstName", user.getFirstName());
 		doc.put("lastName",user.getLastName());
 		doc.put("username", user.getUsername());
+		doc.put("email", user.getEmail());
 		doc.put("hashedPassword", user.getHashedPassword());
 		doc.put("imageURL", user.getImageURL()); 
 		doc.put("isAdmin", user.isAdmin());
 		doc.put("score", user.getScore());
+		doc.put("achievements", user.getAchievements());
 		userColl.insert(doc);
 
 	}
@@ -73,10 +75,12 @@ public class MongoUserDAO implements IUserDAO, UserDetailsService {
 		doc.put("firstName", user.getFirstName());
 		doc.put("lastName",user.getLastName());
 		doc.put("username", user.getUsername());
+		doc.put("email", user.getEmail());
 		doc.put("hashedPassword", user.getHashedPassword());
 		doc.put("imageURL", user.getImageURL()); 
 		doc.put("isAdmin", user.isAdmin());
 		doc.put("score", user.getScore());
+		doc.put("achievements", user.getAchievements());
 	 
 		BasicDBObject updateObj = new BasicDBObject();
 		updateObj.put("$set", doc);
@@ -191,6 +195,7 @@ public class MongoUserDAO implements IUserDAO, UserDetailsService {
 	private DBCollection getCollection() {
 		return db.getCollection(COLLECTION_NAME);
 	}
+	@SuppressWarnings("unchecked")
 	protected User convertFromObject(DBObject obj){
 		User user = new User();
 		
@@ -198,10 +203,12 @@ public class MongoUserDAO implements IUserDAO, UserDetailsService {
 		user.setFirstName((String)obj.get("firstName"));
 		user.setLastName((String)obj.get("lastName"));
 		user.setUsername((String)obj.get("username"));
+		user.setEmail((String)obj.get("email"));
 		user.setHashedPassword((String)obj.get("hashedPassword"));
 		user.setImageURL((String)obj.get("imageURL"));
 		user.setScore((int)obj.get("score"));
 		user.setAdmin((boolean)obj.get("isAdmin"));
+		user.setAchievements((List<String>)obj.get("achievements"));
 				
 		return user;
 	}
@@ -212,7 +219,6 @@ public class MongoUserDAO implements IUserDAO, UserDetailsService {
 		try {
 			user = getUserByUsername(username);
 		} catch (NoUserFoundException | MultipleUsersWithSameIDException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} 
 	    if (user == null) { 
@@ -220,10 +226,6 @@ public class MongoUserDAO implements IUserDAO, UserDetailsService {
 	    } 
 	    Collection<? extends GrantedAuthority> authorities = 
 	      createAuthorities(user); 
-	    System.out.println("I am loading a user now: " + username);
-	    System.out.println("Auth:" + authorities.toString());
-	    System.out.println("Password:" + user.getHashedPassword());
-	    
 	    return new UserCredentials(user.getUsername(), user.getHashedPassword(), 
 	      authorities); 
 	}

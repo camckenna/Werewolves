@@ -24,6 +24,7 @@ import edu.wm.camckenna.werewolves.dao.IVoteDAO;
 import edu.wm.camckenna.werewolves.domain.BooleanMessage;
 import edu.wm.camckenna.werewolves.domain.GPSLocation;
 import edu.wm.camckenna.werewolves.domain.Game;
+import edu.wm.camckenna.werewolves.domain.Kill;
 import edu.wm.camckenna.werewolves.domain.Player;
 import edu.wm.camckenna.werewolves.domain.User;
 import edu.wm.camckenna.werewolves.domain.Vote;
@@ -61,8 +62,19 @@ public class GameService {
 	{
 		return playerDAO.getAllAliveWerewolves();
 	}
+	private List<Player> getAllTownpeople() {
+		return playerDAO.getAllTownspeople();
+	}
+	public List<Player> getAllAliveTownspeople()
+	{
+		return playerDAO.getAllAliveTownspeople();
+	}
 	public List<Player> getAllPlayers() {
 		return playerDAO.getAllPlayers();
+	}
+	private List<Player> getAllAliveHunters() {
+		
+		return playerDAO.getAllAliveHunters();
 	}
 	public void createPlayer(Player player)
 	{
@@ -87,46 +99,123 @@ public class GameService {
 	private List<User> getAllUsers() {
 		return userDAO.getAllUsers();
 	}
+	
+	private boolean hasGameEnded(){
+		if((getAllAliveWerewolves().size() == 0) 
+				|| (getAllAliveTownspeople().size() == 0)){
+			return true;
+		}
+		return false;
+	}
+	private void endGame(boolean werewolvesWon){
+		List<Player> playersToReward;
+		List<Player> alivePlayersToReward;
+		if(werewolvesWon){
+			playersToReward = getAllWerewolves();
+			alivePlayersToReward = getAllAliveWerewolves();
+		}
+		else{
+			playersToReward = getAllTownpeople();
+			alivePlayersToReward = getAllAliveTownspeople();
+		}
+		
+		for(Player p : playersToReward){
+			updateScoreBecauseOfPlayersAction(p, 
+					Values.ON_WINNING_SIDE_POINTS);
+		}
+		for(Player p : alivePlayersToReward){
+			updateScoreBecauseOfPlayersAction(p, 
+					Values.SURVIVED_UNTIL_END_POINTS);
+		}
+		
+	}
 
 	public void switchFromDayToNight(){
+		game.setDay(false);
 		hangPlayer();
-		List<Player> werewolves = getAllWerewolves();
+		List<Player> werewolves = getAllAliveWerewolves();
 		for(Player w : werewolves){
 			w.setCanKill(true);
 			logger.info("Can kill: " + w.getUsername());
 			updatePlayer(w);
 		}
-		List<Player> allPlayers = getAllPlayers();
+		List<Player> allPlayers = getAllAlive();
 		for(Player p : allPlayers){
 			p.setVotedAgainst(null);
 			updatePlayer(p);
 		}
+		List<Player> allAliveTownspeople = getAllAliveTownspeople();
+		for(Player p : allAliveTownspeople){
+			if(p.isHunter()){
+				p.setCanKill(true);
+				updatePlayer(p);
+			}
+		}
 	}
 	public void switchFromNightToDay(){
-		List<Player> werewolves = getAllWerewolves();
+		game.setDay(true);
+		List<Player> werewolves = getAllAliveWerewolves();
 		for(Player w : werewolves){
 			w.setCanKill(false);
 			updatePlayer(w);
 		}		
-		List<Player> allPlayers = getAllPlayers();
+		List<Player> allPlayers = getAllAlive();
 		for(Player p : allPlayers){
 			p.setVotedAgainst("");
+			updateScoreBecauseOfPlayersAction(p, Values.LIVING_POINTS);
 			updatePlayer(p);
 		}
 		
-		List<Player> allAlive = getAllAlive();
-		for(Player p : allAlive){
-			updateScoreBecauseOfPlayersAction(p, 1);
-			updatePlayer(p);
+		List<Player> allAliveTownspeople = getAllAliveTownspeople();
+		for(Player p : allAliveTownspeople){
+			if(p.isHunter()){
+				p.setCanKill(false);
+				updatePlayer(p);
+			}
 		}
 		
 	}
-
-	@Scheduled(fixedDelay=5000)
+	//Currently set at 5 minutes and does nothing
+	@Scheduled(fixedDelay=300000)
+	public void checkHasReported(){
+		logger.info("Checking that everyone has reported in");
+		/*
+		List<Player> players = getAllAlive();
+		
+		for(Player p : players){
+			if(!p.hasReported()){
+				p.setDead(true);
+			}
+			p.setHasReported(false);
+			updatePlayer(p);
+		}
+		*/
+		
+		
+	}
+	@Scheduled(fixedDelay=1000)
 	public void checkGameOperation(){
-		//something
 		if(game == null){
 			startGame();
+		}
+		if(!game.isRunning()){
+			return;
+		}
+		
+		if(hasGameEnded()){
+			if(getAllAliveWerewolves().size() > 0 
+					&& getAllAliveTownspeople().size() == 0){
+				endGame(true);
+			}
+			else if(getAllAliveWerewolves().size() == 0 
+					&& getAllAliveTownspeople().size() > 0){
+				endGame(false);
+			}
+			else{
+				
+			}
+			game.setRunning(false);
+			logger.info("End of game");
 		}
 		//Check if people are reporting
 		//Check if Game is running
@@ -220,10 +309,8 @@ public class GameService {
 			
 		//TODO: Allow setting of start time
 		game = new Game(1, new Date());
-		game.setRunning(true);/*
-		game.setDayNightFreq(1);
-		game.setScentRadius(1);
-		game.setKillRadius(0.1);*/		
+		game.setRunning(true);
+		game.setDay(true);
 
 	}
 	public void startGame(){
@@ -364,6 +451,7 @@ public class GameService {
 		Player player = convertFromPrincipalNameToPlayer(name);
 		player.setLat(lat);
 		player.setLng(lng);
+		player.setHasReported(true);
 		updatePlayer(player);
 	}
 	private User convertFromPrincipalNameToUser(String name){
@@ -391,20 +479,20 @@ public class GameService {
 			Player victim = getPlayerByUsername(victimName);
 			Player killer = getPlayerByUsername(killerName);
 			
-		/*	logger.info("Can kill: " + killer.getCanKill() + 
-					", killer is Alive: " + !killer.isDead() +
-					", victim is Alive: " + !victim.isDead()+
-					", isInRange: " + GameServiceUtil.isInRange(killer, victim, game.getKillRadius()));
-			*/
-			
+
 			if(!GameServiceUtil.canKill(killer, victim, game.getKillRadius())){
 				logger.info("Cannot kill at this time");
 				return;
 			}				
-			double chanceToCounterAttack = 0.5 * (((double)getAllAliveWerewolves().size())/getAllPlayers().size());
-			if(chanceToCounterAttack > Math.random()){
+			
+			if(GameServiceUtil.doesCounterAttackOccur(getAllAliveWerewolves(), getAllPlayers())){
 				logger.info("YOWZAH! Counterattack!" + victim.getUsername() + " countered and killed " + killer.getUsername());
 				killer.setDead(true);
+				victim.setHunter(true);
+				Kill kill = new Kill(victim.getUsername(), killer.getUsername(), 
+						new Date(), victim.getLat(), victim.getLng());
+				
+				killDAO.addKill(kill);
 				updateScoreBecauseOfPlayersAction(victim, Values.COUNTERATTACK_POINTS);
 			}
 			else{
@@ -413,33 +501,102 @@ public class GameService {
 			
 				killer.setCanKill(false);
 				victim.setDead(true);
+				
+				Kill kill = new Kill(killer.getUsername(), victim.getUsername(), 
+						new Date(), victim.getLat(), victim.getLng());
+				
+				killDAO.addKill(kill);
+				
 				updateScoreBecauseOfPlayersAction(killer, Values.KILL_POINTS);
 			}
 			
 			updatePlayer(killer);
-			updatePlayer(victim);		
-			
+			updatePlayer(victim);
 
 	}
+	public void killByHunter(String killerName, String victimName){
+		
+		Player victim = getPlayerByUsername(victimName);
+		Player killer = getPlayerByUsername(killerName);
+		
+
+		if(!GameServiceUtil.canKill(killer, victim, game.getKillRadius())){
+			logger.info("Cannot kill at this time");
+			return;
+		}				
+
+		else{
+			
+			logger.info(killer.getUsername() + " killed " + victim.getUsername());
+			if(GameServiceUtil.doesHunterKill(getAllAliveHunters(), getAllAliveTownspeople()));
+			killer.setCanKill(false);
+			victim.setDead(true);
+			
+			Kill kill = new Kill(killer.getUsername(), victim.getUsername(), 
+					new Date(), victim.getLat(), victim.getLng());
+			
+			killDAO.addKill(kill);
+			if(victim.isWerewolf()){
+				updateScoreBecauseOfPlayersAction(killer, Values.KILL_POINTS);
+			}
+			else{
+				if(Math.random() > .3){
+					logger.info(killer.getUsername() + " commited suicide in anguish over killing the innocent " + victim.getUsername());
+					killer.setDead(true);
+				}
+			}
+			
+		}
+		
+		updatePlayer(killer);
+		updatePlayer(victim);
+	}
+
 	public List<String> getAllNearby(String name){		
 		
 			Player killer = convertFromPrincipalNameToPlayer(name);
-			if(!killer.isWerewolf()){ //cannot get nearby for townspeople
-				return new ArrayList<String>();
+			if(killer.isWerewolf())
+				return getAllNearby_Werewolves(killer);
+			else if(killer.isHunter()){ //cannot get nearby for townspeople
+				return getAllNearby_Hunters(killer);
 			}
-			List<Player> allAlive = getAllAlive();
-			List<String> nearbyPlayers = new ArrayList<String>();
-			assert(killer != null);
-			for(Player p : allAlive){
-				if(!p.getUsername().equals(killer.getUsername())){ //different people
-					if(GameServiceUtil.isInRange(killer, p, 1)){
+			else
+				return new ArrayList<String>();
+			
+	}
+	private List<String> getAllNearby_Werewolves(Player killer){		
+		
+		List<Player> allAlive = getAllAlive();
+		List<String> nearbyPlayers = new ArrayList<String>();
+		for(Player p : allAlive){
+			if(!p.getUsername().equals(killer.getUsername())){ //different people
+				if(GameServiceUtil.isInRange(killer, p, game.getScentRadius())){
+					if(p.isWerewolf()){
+						nearbyPlayers.add("Werewolf: " + p.getUsername());
+					}
+					else{
 						nearbyPlayers.add(p.getUsername());
 					}
 				}
 			}
-			
-			return nearbyPlayers;
-	}
+		}
+		
+		return nearbyPlayers;
+}
+	private List<String> getAllNearby_Hunters(Player killer){		
+		
+		List<Player> allAlive = getAllAlive();
+		List<String> nearbyPlayers = new ArrayList<String>();
+		for(Player p : allAlive){
+			if(!p.getUsername().equals(killer.getUsername())){ //different people
+				if(GameServiceUtil.isInRange(killer, p, game.getKillRadius())){
+					nearbyPlayers.add(p.getUsername());
+				}
+			}
+		}
+		
+		return nearbyPlayers;
+}
 
 	public List<String> getAllAliveAsStrings() {
 		List<Player> players = getAllAlive();
@@ -450,7 +607,50 @@ public class GameService {
 		}
 		return playerNames;
 		
-	}	
+	}
+	public Map<String, String> getListOfPlayers(String name) {
+		Player player = getPlayerByUsername(name);		
+		List<Player> players = getAllPlayers();
+		return GameServiceUtil.getListofPlayersWithStatus(game, player, players);
 
+	}	
+	public boolean getDayOrNight(){
+		return game.isDay();
+	}
+	public List<Vote> getVotes(String name) {
+		Player player = getPlayerByUsername(name);
+		List<Vote> collection = new ArrayList<Vote>();
+		
+		List<Vote> votes = voteDAO.getAllVotes();
+		
+		for(Vote v : votes){
+			if(v.getVoterID().equals(player.getUsername()))
+				collection.add(v);
+		}
+		
+		return collection;
+	}
+	public List<Kill> getKills(String name) {
+		Player player = getPlayerByUsername(name);
+		List<Kill> collection = new ArrayList<Kill>();
+		
+		List<Kill> kills = killDAO.getAllKills();
+		
+		for(Kill k:kills){
+			if(k.getKillerID().equals(player.getUsername()))
+				collection.add(k);
+		}
+		
+		return collection;
+	}
+	public Map<String, Integer> getGameStats() {
+		Map<String, Integer> coll = new HashMap<>();
+		coll.put("Players", getAllPlayers().size());
+		coll.put("Alive", getAllAlive().size());
+		coll.put("Townspeople", getAllAliveTownspeople().size());
+		coll.put("Werewolves", getAllAliveWerewolves().size());
+		
+		return coll;
+	}
 
 }

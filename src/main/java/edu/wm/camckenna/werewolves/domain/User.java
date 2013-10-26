@@ -1,30 +1,37 @@
 package edu.wm.camckenna.werewolves.domain;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class User implements Comparable{
 	
 	private String id;
 	private String firstName;
 	private String lastName;
+	private String email;
 	private String username;
 	private String hashedPassword;
 	private String imageURL;
 	private int score;
 	private boolean isAdmin;
+	private List<String> achievements;
 	
 	public User(){
 		super();
 	}
 	public User(String id, String firstName, String lastName, String username,
-			String hashedPassword, String imageURL, boolean isAdmin) {
+			String email, String hashedPassword, String imageURL) {
 		super();
 		this.id = id;
 		this.firstName = firstName;
 		this.lastName = lastName;
 		this.username = username;
+		this.email = email;
 		this.hashedPassword = hashedPassword;
 		this.imageURL = imageURL;
 		this.score = 0;
-		this.isAdmin = isAdmin;
+		this.isAdmin = false;
+		this.achievements = new ArrayList<String>();
 	}
 	public String getId() {
 		return id;
@@ -49,6 +56,12 @@ public class User implements Comparable{
 	}
 	public void setUsername(String username) {
 		this.username = username;
+	}
+	public String getEmail() {
+		return email;
+	}
+	public void setEmail(String email) {
+		this.email = email;
 	}
 	public String getHashedPassword() {
 		return hashedPassword;
@@ -75,12 +88,22 @@ public class User implements Comparable{
 		this.isAdmin = isAdmin;
 	}
 	
-public int compareTo(Object obj){
-	User user = (User)obj;
-	return (user.getScore() - this.score);
-	}
-public void increaseScore(int i) {
-	this.score+=i;
+	public int compareTo(Object obj){
+		User user = (User)obj;
+		return (user.getScore() - this.score);
+		}
+	public void increaseScore(int i) {
+		this.score+=i;	
+		}
 	
-}
+	public List<String> getAchievements(){
+		return this.achievements;
+	}
+	public void addAchievement(String achievement){
+		this.achievements.add(achievement);
+	}
+	public void setAchievements(List<String> list) {
+		this.achievements = list;
+		
+	}
 }
