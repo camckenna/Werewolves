@@ -14,17 +14,6 @@
         <td><font color='red'><form:errors path='email' /></font></td>
     </tr>
     <tr>
-        <td><form:label path="firstName">First Name</form:label></td>
-        <td><form:input path="firstName" /></td>
-        <td><font color='red'><form:errors path='firstName' /></font></td>
-        
-    </tr>
-    <tr>
-        <td><form:label path="lastName">Last Name</form:label></td>
-        <td><form:input path="lastName" /></td>
-        <td><font color='red'><form:errors path='lastName' /></font></td>
-    </tr>
-    <tr>
         <td><form:label path="username">Username</form:label></td>
         <td><form:input path="username" /></td>
         <td><font color='red'><form:errors path='username' /></font></td>

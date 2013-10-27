@@ -21,8 +21,6 @@ public class TempUserValidator implements Validator {
 	public void validate(Object target, Errors errors) {
 		ValidationUtils.rejectIfEmpty(errors, "email", "email.empty");
 		ValidationUtils.rejectIfEmpty(errors, "username", "username.empty");
-		ValidationUtils.rejectIfEmpty(errors, "firstName", "firstName.empty");
-		ValidationUtils.rejectIfEmpty(errors, "lastName", "lastName.empty");
 		ValidationUtils.rejectIfEmpty(errors, "password", "password.empty");
 		ValidationUtils.rejectIfEmpty(errors, "confirmPassword", "confirmPassword.empty");
 		TempUser user = (TempUser)target;

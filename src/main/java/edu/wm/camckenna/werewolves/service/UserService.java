@@ -25,7 +25,7 @@ public class UserService  {
 	public void createAccount(TempUser user){
 		logger.info("In User Service");
 		String hashedPW = passwordEncoder.encode(user.getPassword());
-		User newUser = new User(UUID.randomUUID().toString(), user.getFirstName(), user.getLastName(), user.getUsername(), user.getEmail(), hashedPW, null);
+		User newUser = new User(UUID.randomUUID().toString(), null, null, user.getUsername(), user.getEmail(), hashedPW, null);
 		userDAO.createUser(newUser);
 		logger.info("User with username " + user.getUsername() + "created");
 	}
