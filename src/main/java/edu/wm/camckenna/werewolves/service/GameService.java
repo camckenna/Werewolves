@@ -614,8 +614,11 @@ public class GameService {
 		return GameServiceUtil.getListofPlayersWithStatus(game, player, players);
 
 	}	
-	public boolean getDayOrNight(){
-		return game.isDay();
+	public String getDayOrNight(){
+		if(game.isDay())
+			return "day";
+		else
+			return "night";
 	}
 	public List<Vote> getVotes(String name) {
 		Player player = getPlayerByUsername(name);

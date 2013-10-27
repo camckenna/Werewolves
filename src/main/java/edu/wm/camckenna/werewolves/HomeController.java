@@ -193,7 +193,7 @@ public class HomeController {
 		return gameService.getListOfPlayers(principal.getName());
 	}
 	@RequestMapping(value= "/day", method=RequestMethod.GET)
-	public @ResponseBody boolean getDayOrNight(Principal principal){				
+	public @ResponseBody String getDayOrNight(Principal principal){				
 		return gameService.getDayOrNight();
 	}
 	@RequestMapping(value= "/getVotes", method=RequestMethod.GET)
