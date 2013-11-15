@@ -470,8 +470,33 @@ public class GameService {
 		
 		return getPlayerByUsername(name);
 	}
-	public Player getPlayerInfo(String name){
-		return convertFromPrincipalNameToPlayer(name);
+	public Map<String, String> getPlayerInfo(String name){
+		Map<String, String> map= new HashMap<String, String>();
+		
+		Player player = getPlayerByUsername(name);
+		User user = convertFromPrincipalNameToUser(name);
+		map.put("username", name);
+		map.put("score", ""+user.getScore());
+		
+		String role = "";
+		if(player.isDead()){
+			role= "Dead";
+		}
+		else if(player.isWerewolf()){
+			role= "Werewolf";
+		}
+		else if(player.isHunter()){
+			role= "Hunter";
+		}
+		else{
+			role= "Townsperson";
+		}
+		map.put("role", role);
+		map.put("curPos", "" + player.getLat() + ", " + player.getLng());
+		map.put("canKill", ""+player.getCanKill());
+		map.put("voted", player.getVotedAgainst());
+		
+		return map;
 	}
 	//Change to boolean
 	public void kill(String killerName, String victimName){

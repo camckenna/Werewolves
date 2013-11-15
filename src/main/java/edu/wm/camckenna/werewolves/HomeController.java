@@ -185,7 +185,7 @@ public class HomeController {
 		return scores;			
 	}	
 	@RequestMapping(value= "/info", method=RequestMethod.GET)
-	public @ResponseBody Player getStatus(Principal principal){				
+	public @ResponseBody Map<String, String> getStatus(Principal principal){				
 		return gameService.getPlayerInfo(principal.getName());
 	}
 	@RequestMapping(value= "/listOfPlayers", method=RequestMethod.GET)
@@ -259,29 +259,7 @@ public class HomeController {
 		}
 		
 	}
-	/*
-	@RequestMapping(value = "/update", method=RequestMethod.GET)
-	public ModelAndView updatePage(Principal principal) {
-		return new ModelAndView("update", "command", new ChangePasswordUser());
-	}	
-	@RequestMapping(value = "/update", method= RequestMethod.POST)
-	public String updateAccount(Principal principal, 
-			@ModelAttribute ChangePasswordUser changePasswordUser, BindingResult result)
-	{
-		changePasswordUser.setUsername(principal.getName());
-	      ChangePasswordUserValidator validator = new ChangePasswordUserValidator();
-	      validator.validate(changePasswordUser, result);
-	      if(result.hasErrors()){
-	    	  logger.info("There were errors");
-	    	  return "redirect:/";
-	      }
-	      else{
-	    	  logger.info("Going to user service");
-		      userService.updateAccount(changePasswordUser, principal.getName());
-		      return "redirect:/update";
-	      }	     
-	}*/
-	
+
 	
 	@RequestMapping(value = "/gameStats", method= RequestMethod.GET)
 	public Map<String, Integer> getGameStats()
