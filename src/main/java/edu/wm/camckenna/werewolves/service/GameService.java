@@ -1,5 +1,6 @@
 package edu.wm.camckenna.werewolves.service;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -526,6 +527,14 @@ public class GameService {
 		
 		list = new ArrayList<String>();
 		map.put("kills", list);
+		
+		List<Kill> kills = getKills(name);
+		
+		SimpleDateFormat sdf = new SimpleDateFormat("MM.dd 'at' HH:mm:ss");
+		for(Kill kill: kills){
+			list.add(kill.getVictimID() + ", " + sdf.format(kill.getTimestampDate()) 
+					+ ", [" + kill.getLat() + ", " + kill.getLng() + "]");
+		}
 		
 		return map;
 	}
