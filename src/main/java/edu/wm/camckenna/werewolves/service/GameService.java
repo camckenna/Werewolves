@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
+import java.util.TimeZone;
 import java.util.UUID;
 
 import org.slf4j.Logger;
@@ -530,10 +531,17 @@ public class GameService {
 		
 		List<Kill> kills = killDAO.getKillsByKillerID(name);
 		
-		SimpleDateFormat sdf = new SimpleDateFormat("MM.dd 'at' HH:mm:ss");
+		SimpleDateFormat sdf = new SimpleDateFormat("MM.dd 'at' hh:mm:ss");
+		sdf.setTimeZone(TimeZone.getTimeZone("GMT"));
 		for(Kill kill: kills){
-			list.add(kill.getVictimID() + ", " + sdf.format(kill.getTimestampDate()) 
-					+ ", [" + kill.getLat() + ", " + kill.getLng() + "]");
+			long timeElapsed = (kill.getTimestampDate().getTime() - game.getCreatedDate().getTime())/1000;
+			
+			long dayNightInSec = game.getDayNightFreq()*60;
+			
+			int day = (int)(timeElapsed/dayNightInSec + 1)/2;
+			
+			list.add(kill.getVictimID() + ", killed on Day " + day
+					+ " at (" + kill.getLat() + ", " + kill.getLng() + ")");
 		}
 		
 		return map;
