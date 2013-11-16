@@ -185,7 +185,7 @@ public class HomeController {
 		return scores;			
 	}	
 	@RequestMapping(value= "/info", method=RequestMethod.GET)
-	public @ResponseBody Map<String, String> getStatus(Principal principal){				
+	public @ResponseBody Map<String, List<String>> getStatus(Principal principal){				
 		return gameService.getPlayerInfo(principal.getName());
 	}
 	@RequestMapping(value= "/listOfPlayers", method=RequestMethod.GET)
@@ -262,7 +262,7 @@ public class HomeController {
 
 	
 	@RequestMapping(value = "/gameStats", method= RequestMethod.GET)
-	public Map<String, Integer> getGameStats()
+	public @ResponseBody Map<String, Integer> getGameStats()
 	{
 		return gameService.getGameStats();
 	}

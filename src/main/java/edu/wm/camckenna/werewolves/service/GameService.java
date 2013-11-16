@@ -470,13 +470,17 @@ public class GameService {
 		
 		return getPlayerByUsername(name);
 	}
-	public Map<String, String> getPlayerInfo(String name){
-		Map<String, String> map= new HashMap<String, String>();
+	public Map<String, List<String>> getPlayerInfo(String name){
+		Map<String, List<String>> map= new HashMap<String, List<String>>();
 		
 		Player player = getPlayerByUsername(name);
 		User user = convertFromPrincipalNameToUser(name);
-		map.put("username", name);
-		map.put("score", ""+user.getScore());
+		List<String> list = new ArrayList<String>();
+		list.add(name);
+		map.put("username", list);
+		list.clear();
+		list.add(""+user.getScore());
+		map.put("score",list );
 		
 		String role = "";
 		if(player.isDead()){
@@ -491,14 +495,35 @@ public class GameService {
 		else{
 			role= "Townsperson";
 		}
-		map.put("role", role);
-		map.put("curPos", "" + player.getLat() + ", " + player.getLng());
-		map.put("canKill", ""+player.getCanKill());
-		map.put("voted", player.getVotedAgainst());
+		list.clear();
+		list.add(role);
+		map.put("role", list);
+		
+		list.clear();
+		list.add("" + player.getLat() + ", " + player.getLng());
+		map.put("curPos", list);
+		
+		list.clear();
+		list.add(""+player.getCanKill());
+		map.put("canKill", list);
+		
+		list.clear();
+		list.add(player.getVotedAgainst());
+		map.put("voted", list);
+		
+		list.clear();
+		List<Vote> votes = getVotes(name);
+		for(Vote vote: votes){
+			list.add(vote.getVotedAgainstID());
+		}
+		map.put("votes", list);
+		
+		list.clear();
+		map.put("kills", list);
 		
 		return map;
 	}
-	//Change to boolean
+	//Change to booleant
 	public void kill(String killerName, String victimName){
 	
 			Player victim = getPlayerByUsername(victimName);
