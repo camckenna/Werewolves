@@ -508,7 +508,13 @@ public class GameService {
 		map.put("canKill", list);
 		
 		list = new ArrayList<String>();
-		list.add(player.getVotedAgainst());
+		if(player.getVotedAgainst() != null){
+			list.add(player.getVotedAgainst());
+		}
+		else{
+			list.add("null");
+		}
+			
 		map.put("voted", list);
 		
 		list = new ArrayList<String>();
