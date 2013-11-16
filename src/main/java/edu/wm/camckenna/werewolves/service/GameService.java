@@ -528,7 +528,7 @@ public class GameService {
 		list = new ArrayList<String>();
 		map.put("kills", list);
 		
-		List<Kill> kills = getKills(name);
+		List<Kill> kills = killDAO.getKillsByKillerID(name);
 		
 		SimpleDateFormat sdf = new SimpleDateFormat("MM.dd 'at' HH:mm:ss");
 		for(Kill kill: kills){
