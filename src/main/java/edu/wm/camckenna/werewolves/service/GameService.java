@@ -478,7 +478,7 @@ public class GameService {
 		List<String> list = new ArrayList<String>();
 		list.add(name);
 		map.put("username", list);
-		list.clear();
+		list = new ArrayList<String>();
 		list.add(""+user.getScore());
 		map.put("score",list );
 		
@@ -495,30 +495,30 @@ public class GameService {
 		else{
 			role= "Townsperson";
 		}
-		list.clear();
+		list = new ArrayList<String>();
 		list.add(role);
 		map.put("role", list);
 		
-		list.clear();
+		list = new ArrayList<String>();
 		list.add("" + player.getLat() + ", " + player.getLng());
 		map.put("curPos", list);
 		
-		list.clear();
+		list = new ArrayList<String>();
 		list.add(""+player.getCanKill());
 		map.put("canKill", list);
 		
-		list.clear();
+		list = new ArrayList<String>();
 		list.add(player.getVotedAgainst());
 		map.put("voted", list);
 		
-		list.clear();
+		list = new ArrayList<String>();
 		List<Vote> votes = getVotes(name);
 		for(Vote vote: votes){
 			list.add(vote.getVotedAgainstID());
 		}
 		map.put("votes", list);
 		
-		list.clear();
+		list = new ArrayList<String>();
 		map.put("kills", list);
 		
 		return map;
