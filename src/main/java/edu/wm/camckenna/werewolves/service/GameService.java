@@ -719,12 +719,18 @@ public class GameService {
 		
 		return collection;
 	}
-	public Map<String, Integer> getGameStats() {
-		Map<String, Integer> coll = new HashMap<>();
-		coll.put("Players", getAllPlayers().size());
-		coll.put("Alive", getAllAlive().size());
-		coll.put("Townspeople", getAllAliveTownspeople().size());
-		coll.put("Werewolves", getAllAliveWerewolves().size());
+	public Map<String, Long> getGameStats() {
+		Map<String, Long> coll = new HashMap<>();
+		coll.put("Players", (long)getAllPlayers().size());
+		coll.put("Alive", (long)getAllAlive().size());
+		coll.put("Townspeople", (long)getAllAliveTownspeople().size());
+		coll.put("Werewolves", (long)getAllAliveWerewolves().size());
+		coll.put("Hunters", (long)getAllAliveHunters().size());
+		coll.put("AllTownspeople", (long)getAllTownpeople().size());
+		coll.put("AllWerewolves", (long)getAllWerewolves().size());
+		coll.put("AllHunters", (long)playerDAO.getAllHunters().size());
+		coll.put("StartTime", game.getCreatedDate().getTime());
+		coll.put("freqInSec", (long)(game.getDayNightFreq()*60));	
 		
 		return coll;
 	}

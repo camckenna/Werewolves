@@ -27,7 +27,7 @@
          <intercept-url pattern="/deleteAccount" access="ROLE_USER" />
          <intercept-url pattern="/updateAccount" access="ROLE_USER" />
          <intercept-url pattern="/gameStats" access="ROLE_USER" />
-        <intercept-url pattern="/start" access="ROLE_ADMIN" />
+        <intercept-url pattern="/start" access="ROLE_USER" />
         <intercept-url pattern="/nightToDay" access="ROLE_ADMIN" />
         <intercept-url pattern="/dayToNight" access="ROLE_ADMIN" />
         <http-basic /> 

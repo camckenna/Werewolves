@@ -262,7 +262,7 @@ public class HomeController {
 
 	
 	@RequestMapping(value = "/gameStats", method= RequestMethod.GET)
-	public @ResponseBody Map<String, Integer> getGameStats()
+	public @ResponseBody Map<String, Long> getGameStats()
 	{
 		return gameService.getGameStats();
 	}
