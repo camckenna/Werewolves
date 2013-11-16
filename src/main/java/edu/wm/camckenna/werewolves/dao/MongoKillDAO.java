@@ -16,6 +16,7 @@ import com.mongodb.MongoClient;
 
 import edu.wm.camckenna.werewolves.domain.Kill;
 import edu.wm.camckenna.werewolves.domain.Player;
+import edu.wm.camckenna.werewolves.domain.Vote;
 
 
 public class MongoKillDAO implements IKillDAO {
@@ -63,7 +64,7 @@ public class MongoKillDAO implements IKillDAO {
 		DBCollection coll = getCollection();
 		
 		BasicDBObject searchQuery = new BasicDBObject();
-		searchQuery.put("killerID", false);
+		searchQuery.put("killerID", killerID);
 		DBCursor cursor = coll.find(searchQuery);
 		
 		while(cursor.hasNext()){
@@ -72,6 +73,7 @@ public class MongoKillDAO implements IKillDAO {
 		}
 		return kills;
 	}
+	
 	@Override
 	public List<Kill> getKillsByVictimID(String victimID) {
 		List<Kill> kills = new ArrayList<>();
@@ -116,7 +118,7 @@ public class MongoKillDAO implements IKillDAO {
 		
 		kill.setKillerID((String)obj.get("killerId"));
 		kill.setVictimID((String)obj.get("victimID"));
-		long time = Long.parseLong((String)obj.get("date"));
+		long time = (Long)obj.get("date");
 		kill.setTimestampDate(new Date(time));	
 		kill.setLng((double)obj.get("lng"));
 		kill.setLat((double)obj.get("lat"));
