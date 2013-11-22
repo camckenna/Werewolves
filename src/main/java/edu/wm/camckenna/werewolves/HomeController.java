@@ -155,11 +155,10 @@ public class HomeController {
 		return "kill"; //go to kill.jsp
 	}
 	@RequestMapping(value = "/killPlayer",  method=RequestMethod.POST)
-	public @ResponseBody String killPlayer(@RequestParam("username") String name, Principal principal)
+	public @ResponseBody boolean killPlayer(@RequestParam("username") String name, Principal principal)
 	{
 
-		gameService.kill(principal.getName(), name);
-		return (principal.getName() + " attempted to kill " + name);
+		return gameService.kill(principal.getName(), name);
 	}
  
 	@RequestMapping(value= "/location", method=RequestMethod.POST)

@@ -546,16 +546,18 @@ public class GameService {
 		
 		return map;
 	}
-	//Change to booleant
-	public void kill(String killerName, String victimName){
+	
+	public boolean kill(String killerName, String victimName){
 	
 			Player victim = getPlayerByUsername(victimName);
 			Player killer = getPlayerByUsername(killerName);
 			
+			boolean successFlag;
+			
 
 			if(!GameServiceUtil.canKill(killer, victim, game.getKillRadius())){
 				logger.info("Cannot kill at this time");
-				return;
+				return false;
 			}				
 			
 			if(GameServiceUtil.doesCounterAttackOccur(getAllAliveWerewolves(), getAllPlayers())){
@@ -567,6 +569,7 @@ public class GameService {
 				
 				killDAO.addKill(kill);
 				updateScoreBecauseOfPlayersAction(victim, Values.COUNTERATTACK_POINTS);
+				successFlag = false;
 			}
 			else{
 				
@@ -581,10 +584,12 @@ public class GameService {
 				killDAO.addKill(kill);
 				
 				updateScoreBecauseOfPlayersAction(killer, Values.KILL_POINTS);
+				successFlag = true;
 			}
 			
 			updatePlayer(killer);
 			updatePlayer(victim);
+			return successFlag;
 
 	}
 	public void killByHunter(String killerName, String victimName){

@@ -71,7 +71,7 @@ public class GameServiceUtil {
 	}
 	public static boolean doesCounterAttackOccur(List<Player> werewolves, List<Player> townspeople){
 		
-		if(Math.random() <= .5*((double)werewolves.size())/townspeople.size())
+		if(Math.random() <= .3*((double)werewolves.size())/townspeople.size())
 			return true;
 		else
 			return false;
@@ -82,10 +82,12 @@ public class GameServiceUtil {
 	public static Map<String, String> getListofPlayersWithStatus(Game game,
 			Player player, List<Player> players) {
 
-		if(player.isDead())
+		if(player.isDead()){
 			return getDeadList(player, players);
-		if(game.isDay())
+		}
+		else if(game.isDay()){
 			return getDayList(player, players);
+		}
 		else if(!game.isDay() && player.isWerewolf())
 			return getWerewolfList(game, player, players);
 		else if(!game.isDay() && player.isHunter())
@@ -154,14 +156,14 @@ public class GameServiceUtil {
 				coll.put(p.getUsername(), "DEAD");
 			else if(player.isWerewolf()){
 				if(p.isWerewolf()){
-					coll.put(p.getUsername(), "WEREWOLF");
+					coll.put(p.getUsername(), "WEREWOLF_VOTE");
 				}
-				else				{
-					coll.put(p.getUsername(), "ALIVE");
-				}					
+				else{
+					coll.put(p.getUsername(), "ALIVE_VOTE");
+				}
 			}
 			else{
-				coll.put(p.getUsername(), "ALIVE");
+				coll.put(p.getUsername(), "ALIVE_VOTE");
 			}
 		}
 		return coll;
