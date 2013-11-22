@@ -3,7 +3,7 @@ package edu.wm.camckenna.werewolves.domain;
 import java.util.ArrayList;
 import java.util.List;
 
-public class User implements Comparable{
+public class User implements Comparable<User>{
 	
 	private String id;
 	private String firstName;
@@ -88,7 +88,7 @@ public class User implements Comparable{
 		this.isAdmin = isAdmin;
 	}
 	
-	public int compareTo(Object obj){
+	public int compareTo(User obj){
 		User user = (User)obj;
 		return (user.getScore() - this.score);
 		}
