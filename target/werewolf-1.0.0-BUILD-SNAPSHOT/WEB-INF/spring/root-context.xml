@@ -21,6 +21,12 @@
 	<mvc:annotation-driven />	
 	<context:component-scan base-package="edu.wm.camckenna.werewolves" />
 	
+
+    <mvc:resources mapping="/resources/**" location="/resources/" />
+    <mvc:resources mapping="/images/**" location="/images/"/>
+    <mvc:resources mapping="/styles/**" location="/styles/"/>
+    <mvc:resources mapping="/html/**" location="/html/"/>
+	
 	<task:annotation-driven executor="myExecutor" scheduler="myScheduler" />
 	<task:executor id="myExecutor" pool-size="5" />
 	<task:scheduler id="myScheduler" pool-size="10" />
