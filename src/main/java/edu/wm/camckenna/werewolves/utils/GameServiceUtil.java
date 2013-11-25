@@ -124,6 +124,9 @@ public class GameServiceUtil {
 				coll.put(p.getUsername(), "DEAD");
 			else if(p.isWerewolf())
 				coll.put(p.getUsername(), "WEREWOLF");
+			else if(player.getCanKill() == false){
+				coll.put(p.getUsername(), "ALIVE");				
+			}
 			else if(isInRange(player, p, game.getKillRadius())){
 				coll.put(p.getUsername(), "KILL");
 			}

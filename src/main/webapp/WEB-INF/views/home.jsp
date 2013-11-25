@@ -6,14 +6,18 @@
 	<link rel="stylesheet" type="text/css" href="<c:url value='/resources/styles/welcome.css'/>">
 </head>
 <body>
-<h1>
+<div class="container">
+<div id="leftcolumn"></div>
+<div id="main">
+<h1 class="center">
 	Welcome to Werewolves!  
 </h1>
 
-<img src="http://www.cs.wm.edu/~rfd/teaching/cs420/assignments/werewolf.jpg" />
+<img class="center" height="50%" width="50%" src="http://www.cs.wm.edu/~rfd/teaching/cs420/assignments/werewolf.jpg" />
 
-<h3>The Rules</h3>
-<ul>
+<h3 class="center">The Rules</h3>
+<div class="center"></div>
+<ul >
 	<li>There are werewolves and townspeople </li>
 	<li>During the night, werewolves kill townspeople if they are nearby </li>
 	<li>Werewolves cannot kill werewolves</li>
@@ -29,5 +33,8 @@
 </ul>
 
 <h4>Good luck...</h4>
+</div>
+<div id="rightcolumn"></div>
+</div>
 </body>
 </html>
