@@ -190,7 +190,7 @@ public class HomeController {
 	}
 	
 	@RequestMapping(value = "/registerApp", method = RequestMethod.POST)
-	public String addUser(@RequestParam("email") String email,
+	public @ResponseBody String addUser(@RequestParam("email") String email,
 			@RequestParam("username") String username,
 			@RequestParam("password") String password) {
 		List<String> names = userService.getAllNames();
