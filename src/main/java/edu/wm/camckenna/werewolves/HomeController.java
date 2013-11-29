@@ -60,14 +60,6 @@ public class HomeController {
 	 */
 	@RequestMapping(value = "/", method = RequestMethod.GET)
 	public String home(Locale locale, Model model) {
-		logger.info("Welcome home! The client locale is {}.", locale);
-		
-		Date date = new Date();
-		DateFormat dateFormat = DateFormat.getDateTimeInstance(DateFormat.LONG, DateFormat.LONG, locale);
-		
-		String formattedDate = dateFormat.format(date);
-		
-		model.addAttribute("serverTime", formattedDate );
 		
 		return "home";
 	}
@@ -114,8 +106,6 @@ public class HomeController {
 		List<Player> players = gameService.getAllAlive();
 		return players;
 	}
-
-
 	@RequestMapping(value = "/start", method= RequestMethod.GET)
 	public String startGame()
 	{
@@ -164,20 +154,10 @@ public class HomeController {
 	@RequestMapping(value= "/location", method=RequestMethod.POST)
 	public @ResponseBody String setLocation(@RequestParam("lat") double lat, 
 			@RequestParam("lng") double lng, Principal principal){		
-		
-		logger.info("Setting for " + principal.getName() + "'s location to: " + lat + ", " + lng);
 		gameService.updatePosition(principal.getName(), lat, lng);
 		return "Setting for " + principal.getName() + "'s location to: " + lat + ", " + lng;
 	}
 
-
-	@RequestMapping(value= "/home", method=RequestMethod.GET)
-	public @ResponseBody String checkGameOperation(){		
-
-		gameService.checkGameOperation();
-		return "Checking operation...";			
-	}
- 
 	@RequestMapping(value= "/scores", method=RequestMethod.GET)
 	public @ResponseBody List<String> getScores(Principal principal){				
 		List<String> scores = gameService.getScores();
@@ -203,44 +183,30 @@ public class HomeController {
 	public @ResponseBody List<Kill> getKills(Principal principal){				
 		return gameService.getKills(principal.getName());
 	}
-	
-	/*
-	@RequestMapping(value = "/register", method=RequestMethod.POST)
-	public @ResponseBody String register(
-			@RequestParam("email") String email,
-			@RequestParam("firstName") String firstName, 
-			@RequestParam("lastName") String lastName,
-			@RequestParam("username") String username,
-			@RequestParam("password") String password,
-			@RequestParam("confirmPassword") String confirmPassword
-			){
-		
-		userService.createAccount(new User(UUID.randomUUID().toString(), firstName, lastName, username, email, password, null));
-				
-		return ("Registered");
-	}*/
+
 	@RequestMapping(value = "/register", method=RequestMethod.GET)
 	public ModelAndView register() {
 		return new ModelAndView("register", "command", new TempUser());
 	}
 	
-	@RequestMapping(value = "/register", method = RequestMethod.POST)
-	public String addStudent(@ModelAttribute TempUser tempUser, BindingResult result) {
-
+	@RequestMapping(value = "/registerApp", method = RequestMethod.POST)
+	public String addUser(@RequestParam("email") String email,
+			@RequestParam("username") String username,
+			@RequestParam("password") String password) {
+		List<String> names = userService.getAllNames();
+		if(names.contains(username)){
+			return "false";
+		}
+		else{
+			TempUser temp = new TempUser();
+			temp.setUsername(username);
+			temp.setEmail(email);
+			temp.setPassword(password);
+			userService.createAccount(temp);
+			return "true";
+		}
 		
-	      logger.info("Got to the Post");
-	      logger.info(tempUser.getUsername());
-	      TempUserValidator validator = new TempUserValidator();
-	      validator.validate(tempUser, result);
-	      if(result.hasErrors()){
-	    	  logger.info("There were errors");
-	    	  return "redirect:/home";
-	      }
-	      else{
-	    	  logger.info("Going to user service");
-		      userService.createAccount(tempUser);
-		      return "registered";
-	      }	     
+		
 	 }
 	@RequestMapping(value = "/delete", method=RequestMethod.GET)
 	public String deletePage(Principal principal) {
@@ -255,11 +221,8 @@ public class HomeController {
 		else{
 	    	  logger.info("There were errors");
 	    	  return "redirect:/";
-		}
-		
+		}		
 	}
-
-	
 	@RequestMapping(value = "/gameStats", method= RequestMethod.GET)
 	public @ResponseBody Map<String, Long> getGameStats()
 	{

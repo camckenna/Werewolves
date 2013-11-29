@@ -1,6 +1,8 @@
 package edu.wm.camckenna.werewolves.service;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.UUID;
 
 import org.slf4j.Logger;
@@ -67,6 +69,16 @@ public class UserService  {
 			logger.error("No users found for username: " + name);
 			return null;
 		}
+	}
+	
+	public List<String> getAllNames(){
+		
+		List<String> names = new ArrayList<String>();
+		List<User> users = userDAO.getAllUsers();
+		for(User user : users){
+			names.add(user.getUsername());
+		}
+		return names;
 	}
 
 }
