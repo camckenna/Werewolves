@@ -10,6 +10,7 @@ public class Game {
 	private boolean isDay;
 	private double scentRadius; //in kilometer
 	private double killRadius;
+	private String result;
 	
 	public Game(int dayNightFreq, Date createdDate) {
 		super();
@@ -18,6 +19,7 @@ public class Game {
 		this.isDay = true;
 		this.scentRadius = 0.1; 
 		this.killRadius = 0.01; 
+		this.result = "Running";
 	}
 	public int getDayNightFreq() {
 		return dayNightFreq;
@@ -54,5 +56,11 @@ public class Game {
 	}
 	public void setKillRadius(double killRadius) {
 		this.killRadius = killRadius;
+	}
+	public String getResult() {
+		return result;
+	}
+	public void setResult(String result) {
+		this.result = result;
 	}
 }

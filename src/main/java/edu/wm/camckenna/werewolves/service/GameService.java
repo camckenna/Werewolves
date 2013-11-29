@@ -115,10 +115,12 @@ public class GameService {
 		if(werewolvesWon){
 			playersToReward = getAllWerewolves();
 			alivePlayersToReward = getAllAliveWerewolves();
+			game.setResult("Werewolves");
 		}
 		else{
 			playersToReward = getAllTownpeople();
 			alivePlayersToReward = getAllAliveTownspeople();
+			game.setResult("Townspeople");
 		}
 		
 		for(Player p : playersToReward){
@@ -218,6 +220,7 @@ public class GameService {
 			}
 			game.setRunning(false);
 			logger.info("End of game");
+			return;
 		}
 		//Check if people are reporting
 		//Check if Game is running
@@ -735,7 +738,17 @@ public class GameService {
 		coll.put("AllWerewolves", (long)getAllWerewolves().size());
 		coll.put("AllHunters", (long)playerDAO.getAllHunters().size());
 		coll.put("StartTime", game.getCreatedDate().getTime());
-		coll.put("freqInSec", (long)(game.getDayNightFreq()*60));	
+		coll.put("freqInSec", (long)(game.getDayNightFreq()*60));
+		
+		if(game.getResult().equals("Werewolves")){
+			coll.put("result", (long)2);
+		}
+		else if(game.getResult().equals("Townspeople")){
+			coll.put("result", (long)1);
+		}
+		else{
+			coll.put("result", (long)0);
+		}
 		
 		return coll;
 	}
