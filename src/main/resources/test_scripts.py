@@ -44,7 +44,7 @@ def test_werewolves():
 
 	raw_input(">")
 
-	print("Points are awarded for surviving each night, for voting to kill a werewolfand having that werewolf hang, for a successful kill and for a counterattack")
+	print("Points are awarded for surviving each night, for voting to kill a werewolf and having that werewolf hang, for a successful kill and for a counterattack")
 		
 	raw_input(">")
 

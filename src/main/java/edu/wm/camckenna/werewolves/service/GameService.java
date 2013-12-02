@@ -241,7 +241,7 @@ public class GameService {
 				logger.info("Switching to Day");
 			}				
 		}		
-		logger.info("Time since game began in seconds: " + timeElapsed);
+		//logger.info("Time since game began in seconds: " + timeElapsed);
 	}
 	public void startGame(String freq, String kill, String scent){
 		/*int dayNightFreq;

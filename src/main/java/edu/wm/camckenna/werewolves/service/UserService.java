@@ -77,6 +77,7 @@ public class UserService  {
 		List<User> users = userDAO.getAllUsers();
 		for(User user : users){
 			names.add(user.getUsername());
+			logger.info(user.getUsername());
 		}
 		return names;
 	}

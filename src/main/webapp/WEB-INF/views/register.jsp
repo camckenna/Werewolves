@@ -2,11 +2,14 @@
 <html>
 <head>
     <title>Register</title>
+    
+	<link rel="stylesheet" type="text/css" href="<c:url value='/resources/styles/welcome.css'/>">
 </head>
 <body>
 
+<div class="center">
 <h2>Sign-Up Information</h2>
-<form:form method="POST" action="/register">
+<form:form method="POST" modelAttribute="TempUser" action="/register">
    <table>
     <tr>
         <td><form:label path="email">Email</form:label></td>        
@@ -36,5 +39,6 @@
     </tr>
 </table>  
 </form:form>
+</div>
 </body>
 </html>

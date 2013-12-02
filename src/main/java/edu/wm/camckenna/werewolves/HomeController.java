@@ -2,6 +2,7 @@ package edu.wm.camckenna.werewolves;
 
 import java.security.Principal;
 import java.text.DateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -17,6 +18,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.ui.Model;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
+import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -59,8 +61,12 @@ public class HomeController {
 	 * Simply selects the home view to render by returning its name.
 	 */
 	@RequestMapping(value = "/", method = RequestMethod.GET)
-	public String home(Locale locale, Model model) {
-		
+	public String home(Locale locale, Model model) {	
+		return "home";
+	}
+	
+	@RequestMapping(value = "/home", method = RequestMethod.GET)
+	public String afterHome(Locale locale, Model model) {	
 		return "home";
 	}
 	/*
@@ -186,7 +192,42 @@ public class HomeController {
 
 	@RequestMapping(value = "/register", method=RequestMethod.GET)
 	public ModelAndView register() {
-		return new ModelAndView("register", "command", new TempUser());
+		ModelAndView mv = new ModelAndView();
+		mv.addObject("TempUser", new TempUser());
+		mv.setViewName("register");
+		return mv;
+	}
+	
+	@RequestMapping(value = "/register", method=RequestMethod.POST)
+	public ModelAndView registerUser(@ModelAttribute("TempUser") TempUser user, BindingResult result){
+		TempUserValidator validator = new TempUserValidator();
+		logger.info("Inside register");
+		ModelAndView mv = new ModelAndView();
+		validator.validate(user, result);
+		List<String> names = userService.getAllNames();
+		if(!result.hasErrors()){
+			
+			logger.info(user.getUsername());
+			if(names.contains(user.getUsername())){
+				logger.info("Has name: ");
+				mv.setViewName("register");
+				return mv;
+			}
+			
+			mv.setViewName("registered");
+			logger.info("registered");
+			userService.createAccount(user);
+			return mv;
+		}else{
+			List <String> errors = new ArrayList<String> ();
+			for (ObjectError error : result.getAllErrors()) {
+			errors.add(error.getCode()+ " " + error.getDefaultMessage());
+			}
+			mv.addObject("errors", errors);
+			mv.setViewName("register");
+			return mv;
+			
+		}
 	}
 	
 	@RequestMapping(value = "/registerApp", method = RequestMethod.POST)

@@ -51,5 +51,8 @@
 	<bean id="killDAO" class="edu.wm.camckenna.werewolves.dao.MongoKillDAO" />
 	<bean id="userCredentialsDetailsService" class="edu.wm.camckenna.werewolves.service.UserCredentialsDetailsService" />
 	
-	
+	<bean id="messageSource"
+    class="org.springframework.context.support.ResourceBundleMessageSource">
+    <property name="basename" value = "messages" />
+</bean>
 </beans>
