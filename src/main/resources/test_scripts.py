@@ -150,6 +150,9 @@ def test_werewolves():
 	r = requests.get('https://infinite-earth-3076.herokuapp.com/players/alive', auth=('Castiel', 'letmein'))
 	print(r.text)
 
+	payload = {'frequency': "60", 'killRange': "0.1", 'scentRange': "0.1"}
+	r = requests.post('https://infinite-earth-3076.herokuapp.com/restart', data=payload, auth=('Admin', 'letmein'))
+
 
 if __name__ == "__main__":
    
